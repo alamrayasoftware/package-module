@@ -28,5 +28,6 @@
                 "Arsoft\\Modules\\arsoftModuleServiceProvider"
             ]
         }
+      }
       
 }

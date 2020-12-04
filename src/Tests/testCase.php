@@ -2,9 +2,9 @@
 
 namespace Arsoft\Module\Tests;
 
-use Arsoft\Modules\arsoftModuleServiceProvider;
+use Arsoft\Modules\ModuleServiceProvider;
 
-class testCase extends \Orchestra\Testbench\TestCase
+class testCase
 {
   public function setUp(): void
   {

@@ -1,6 +1,6 @@
 {
     "name": "arsoft/module",
-    "description": "\"package untuk generate module semua project arsoft\"\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C,",
+    "description": "package untuk generate module semua project arsoft",
     "authors": [
         {
             "name": "arsoft",
@@ -26,7 +26,7 @@
       "extra": {
         "laravel": {
             "providers": [
-                "Arsoft\\Modules\\arsoftModuleServiceProvider"
+                "Arsoft\\Modules\\ModuleServiceProvider"
             ]
         }
       }

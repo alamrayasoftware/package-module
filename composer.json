@@ -13,15 +13,10 @@
 
     "autoload": {
         "psr-4": {
-          "Arsoft\\Modules\\": "src"
+          "Arsoft\\Module\\": "src"
         }
       },
-  
-      "autoload-dev": {
-        "psr-4": {
-              "Arsoft\\Modules\\Tests\\": "Tests"
-          }
-      },
+
   
       "extra": {
         "laravel": {

@@ -1,0 +1,32 @@
+{
+    "name": "arsoft/module",
+    "description": "\"package untuk generate module semua project arsoft\"\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C,",
+    "authors": [
+        {
+            "name": "arsoft",
+            "email": "arsoft@alamraya.co.id"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+
+    "autoload": {
+        "psr-4": {
+          "Arsoft\\Modules\\": "src"
+        }
+      },
+  
+      "autoload-dev": {
+        "psr-4": {
+              "Arsoft\\Modules\\Tests\\": "Tests"
+          }
+      },
+  
+      "extra": {
+        "laravel": {
+            "providers": [
+                "Arsoft\\Modules\\arsoftModuleServiceProvider"
+            ]
+        }
+      
+}

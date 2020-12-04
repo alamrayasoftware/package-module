@@ -1,0 +1,56 @@
+<?php 
+namespace App\Modules;
+ 
+class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
+{
+
+    protected $path = '';
+
+    /**
+     * Will make sure that the required modules have been fully loaded
+     * @return void
+     */
+    public function boot()
+    {
+        // For each of the registered modules, include their routes and Views
+        $this->initiateModules();
+    }
+
+    private function initiateModules(){
+        $filesystem = $this->app->make('files');
+
+        foreach($filesystem->directories(app_path('Modules')) as $directory) {
+            $truncate = str_replace('\\', '/', $directory);
+            $parrentName = last(explode('/', $truncate));
+            
+            foreach($filesystem->directories(app_path('/Modules/'.$parrentName)) as $modules){
+                $truncate = str_replace('\\', '/', $modules);
+                $moduleName = last(explode('/', $truncate));
+
+                if(is_dir(__DIR__.'/'.$parrentName.'/'.$moduleName.'/Views')) {
+                    $this->loadViewsFrom(__DIR__.'/'.$parrentName.'/'.$moduleName.'/Views', $moduleName);
+
+                }
+            }
+        }
+    }
+
+    public function register() {
+        $filesystem = $this->app->make('files');
+
+        foreach($filesystem->directories(app_path('Modules')) as $directory) {
+            $truncate = str_replace('\\', '/', $directory);
+            $parrentNama = last(explode('/', $truncate));
+            
+            foreach($filesystem->directories(app_path('Modules/'.$parrentNama)) as $modules){
+                $truncate = str_replace('\\', '/', $modules);
+                $moduleName = last(explode('/', $truncate));
+                
+                if(is_dir(app_path().'/Modules/'.$parrentNama.'/'.$moduleName.'/Providers/')){
+                    $this->app->register("App\\Modules\\{$parrentNama}\\{$moduleName}\\Providers\\routeServiceProvider");
+                }
+            }
+        }
+    }
+
+}

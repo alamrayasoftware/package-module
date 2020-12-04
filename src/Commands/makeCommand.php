@@ -81,7 +81,7 @@ class makeCommand extends Command
 
         file_put_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Views/index.blade.php', $str);
 
-        $this->info("\nModul Berhasil Dibuat => ".$this->argument('name')."\n");
+        $this->info("\nModul Berhasil Dibuat => url => ".$this->argument('name')."\n");
     }
 
 }

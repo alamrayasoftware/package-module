@@ -27,6 +27,7 @@ class config
         "Middleware",
         "Models",
         "Providers",
+        "Resources",
         "Routes",
         "Views"
     ];

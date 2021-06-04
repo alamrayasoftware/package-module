@@ -64,7 +64,6 @@ class makeCommand extends Command
         // routeService Provider
         copy(__DIR__ . '/Stubs/routeServiceProvider.stub', $path . '/' . str_replace('\\', '/', $pathCreated) . '/Providers/routeServiceProvider.php');
         $str = file_get_contents($path . '/' . str_replace('\\', '/', $pathCreated) . '/Providers/routeServiceProvider.php');
-
         $str = str_replace('__defaultNamespace__', str_replace('/', '\\', $pathCreated), $str);
         $str = str_replace('__defaultPattern__', str_replace('\\', '/', $pathCreated), $str);
         file_put_contents($path . '/' . str_replace('\\', '/', $pathCreated) . '/Providers/routeServiceProvider.php', $str);
@@ -84,17 +83,14 @@ class makeCommand extends Command
         copy(__DIR__ . '/Stubs/index.stub', $path . '/' . $pathCreated . '/Views/index.blade.php');
         $str = file_get_contents($path . '/' . $pathCreated . '/Views/index.blade.php');
         $str = str_replace('__defaultContent__', str_replace('\\', '/', $pathCreated), $str);
-
         file_put_contents($path . '/' . $pathCreated . '/Views/index.blade.php', $str);
 
         // controller
         $conName = ucfirst($arguments[count($arguments) - 1]) . 'Controller';
-
         copy(__DIR__ . '/Stubs/controller.stub', $path . '/' . $pathCreated . '/Controllers/' . $conName . '.php');
         $str = file_get_contents($path . '/' . $pathCreated . '/Controllers/' . $conName . '.php');
         $str = str_replace('__defaultGroup__', str_replace('/', '\\', $pathCreated), $str);
         $str = str_replace('__defaultClass__', $conName, $str);
-
         file_put_contents($path . '/' . $pathCreated . '/Controllers/' . $conName . '.php', $str);
 
         // model
@@ -102,9 +98,15 @@ class makeCommand extends Command
         $str = file_get_contents($path . '/' . $pathCreated . '/Models/' . $argument[1] . '.php');
         $str = str_replace('__defaultGroup__', str_replace('/', '\\', $pathCreated), $str);
         $str = str_replace('__defaultClass__', $arguments[count($arguments) - 1], $str);
-
         file_put_contents($path . '/' . $pathCreated . '/Models/' . $argument[1] . '.php', $str);
 
+        // api resources
+        $apiResourceName = ucfirst($arguments[count($arguments) - 1]) . 'Resource';
+        copy(__DIR__ . '/Stubs/apiResource.stub', $path . '/' . $pathCreated . '/Resources/' . $apiResourceName . '.php');
+        $str = file_get_contents($path . '/' . $pathCreated . '/Resources/' . $apiResourceName . '.php');
+        $str = str_replace('__defaultGroup__', str_replace('/', '\\', $pathCreated), $str);
+        $str = str_replace('__defaultClass__', $apiResourceName, $str);
+        file_put_contents($path . '/' . $pathCreated . '/Resources/' . $apiResourceName . '.php', $str);
 
         $this->info("\nModul Berhasil Dibuat => url => " . $this->argument('name') . "\n");
     }

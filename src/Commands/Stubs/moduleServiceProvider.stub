@@ -23,8 +23,8 @@ class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
             $truncate = str_replace('\\', '/', $modules);
             $moduleName = last(explode('/', $truncate));
 
-            if(is_dir(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Views')) {
-                $this->loadViewsFrom(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Views', $moduleName);
+            if(is_dir(app_path(str_replace('\\', '/', $path).'/'.$moduleName.'/Views'))) {
+                $this->loadViewsFrom(app_path(str_replace('\\', '/', $path).'/'.$moduleName.'/Views', $moduleName));
             }else{
                 $this->initiateModules($path.'\\'.$moduleName);
             }
@@ -44,7 +44,7 @@ class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
             $moduleName = last(explode('/', $truncate));
             $pathProvider = str_replace('\\', '/', $path);
 
-            if(is_dir(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Providers')) {
+            if(is_dir(app_path(str_replace('\\', '/', $path).'/'.$moduleName.'/Providers'))) {
                 $this->app->register("App\\{$path}\\{$moduleName}\\Providers\\routeServiceProvider");
             }else{
                 $this->initiateProvider($path.'\\'.$moduleName);

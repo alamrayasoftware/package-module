@@ -19,7 +19,7 @@ class makeCommand extends Command
 
     public function handle()
     {
-        $path       = app_path().'\Modules';
+        $path       = app_path('Modules');
         $str        = file_get_contents(__DIR__.'/Stubs/moduleServiceProvider.stub');
         $arguments   = explode('/', $this->argument('name'));
 

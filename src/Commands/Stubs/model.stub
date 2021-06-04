@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Modules\__defaultGroup__\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class __defaultClass__ extends Model
+{
+    
+}

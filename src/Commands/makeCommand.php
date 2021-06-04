@@ -2,6 +2,7 @@
 
 namespace Arsoft\Module\Commands;
 
+use Arsoft\Module\config;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
@@ -20,7 +21,7 @@ class makeCommand extends Command
     {
         $path       = app_path().'\Modules';
         $str        = file_get_contents(__DIR__.'/Stubs/moduleServiceProvider.stub');
-        $argument   = explode('/', $this->argument('name'));
+        $arguments   = explode('/', $this->argument('name'));
 
         if(!file_exists($path)){
             $this->info(" Modul Belum Terinisialisasi");
@@ -28,60 +29,85 @@ class makeCommand extends Command
             return 0;
         }
 
-        if(count($argument) != 2){
-            $this->info(" -- Invalid Modul Argument -- \n");
-            $this->info(" Format Argument Modul Harus Berisikan Kelompok_Modul/Nama_Modul");
-            $this->info(" Contoh : php artisan armodule:make Pembelian/modul_1 \n");
-            return 0;
+        if(file_exists($path.'\\'.$this->argument('name'))){
+            $this->info("Modul \"".$this->argument('name')."\" Sudah Ada.. \n");
+            return false;
         }
 
-        if(!file_exists($path.'\\'.ucfirst($argument[0]))){
-            $this->info(" Kelompok Modul ".ucfirst($argument[0])." Tidak Terdaftar");
-            $data = '[';
-            foreach(config::getParrentModules() as $key => $parrent){
-                $data .= $parrent.', ';
+        // inisialisasi path
+            $pathCreated = '';
+            foreach($arguments as $key => $argument){
+                $pathCreated .= ucfirst($argument.'\\');
+                $trimmer = rtrim($pathCreated, '\\ ');
+
+                if(!file_exists($path.'\\'.$trimmer)){
+                    mkdir($path.'/'.str_replace('\\', '/', $trimmer));
+                }else{
+                    if(is_dir(str_replace('\\', '/', $path.'\\'.$trimmer).'/Providers')){
+                        $this->info('"'.$pathCreated."\" Adalah Modul Aktif, Tidak Bisa Dijadikan Parrent Module, Coba Pilih Folder Lain \r\n");
+
+                        return false;
+                    }
+                }
+
             }
-            $data .= ']';
-            $this->info(" Modul Yang Terdaftar Adalah ".$data);
-            return 0;
-        }
 
-        $this->info(count($argument));
-        return 0;
+            $pathCreated = rtrim($pathCreated, '\\ ');
+            
+            $this->info('Inisialisasi Modul '.$pathCreated."\r\n");
 
-        if(file_exists($path.'\\'.ucfirst($argument[0]).'\\'.$argument[1])){
-            $this->info('Modul "'.ucfirst($argument[0]).' - '.$argument[1].'" sudah ada. Gagal melakukan inisialisasi..!');
-            return 0;
-        }
-
-        if(mkdir($path.'/'.ucfirst($argument[0]).'/'.$argument[1])){
+        // Copy Files
             foreach(config::getModulStructure() as $key => $parrent){
-                $this->info('Generating Module/'.ucfirst($argument[0]).'/'.$argument[1].'/'.$parrent.' Complete ...');
-                mkdir($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/'.$parrent);
+                $this->info('Generating "'.$parrent.'" -> Module/'.str_replace('\\', '/', $pathCreated).'/'.$parrent.' Complete ...');
+                mkdir($path.'/'.str_replace('\\', '/', $pathCreated).'/'.$parrent);
             }
-        }
 
-        copy(__DIR__.'/Stubs/routeServiceProvider.stub', $path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Providers/routeServiceProvider.php');
-        $str = file_get_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Providers/routeServiceProvider.php');
-        $str = str_replace('__defaultNamespace__', ucfirst($argument[0]).'\\'.$argument[1], $str);
-        $str = str_replace('__defaultPattern__', ucfirst($argument[0]).'/'.$argument[1], $str);
-        file_put_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Providers/routeServiceProvider.php', $str);
+            // routeService Provider
+                copy(__DIR__.'/Stubs/routeServiceProvider.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Providers/routeServiceProvider.php');
+                $str = file_get_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Providers/routeServiceProvider.php');
+                $str = str_replace('__defaultNamespace__', $pathCreated, $str);
+                $str = str_replace('__defaultPattern__', str_replace('\\', '/', $pathCreated), $str);
+                file_put_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Providers/routeServiceProvider.php', $str);
 
-        copy(__DIR__.'/Stubs/web.stub', $path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Routes/web.php');
-        $str = file_get_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Routes/web.php');
-        $str = str_replace('__defaultName__', $argument[1], $str);
+            // Route Web
+                copy(__DIR__.'/Stubs/web.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Routes/web.php');
+                $str = file_get_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Routes/web.php');
+                $str = str_replace('__defaultName__', ucfirst($arguments[count($arguments) - 1]), $str);
+                $str = str_replace('__defaultUrl__', strtolower(str_replace('\\', '/', $pathCreated)), $str);
+                $str = str_replace('__defaultGroup__', strtolower($arguments[count($arguments) - 1]), $str);
+                file_put_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Routes/web.php', $str);
 
-        file_put_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Routes/web.php', $str);
+            // route api
+                copy(__DIR__.'/Stubs/api.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Routes/api.php');
 
-        copy(__DIR__.'/Stubs/api.stub', $path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Routes/api.php');
+            // index blade
+                copy(__DIR__.'/Stubs/index.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Views/index.blade.php');
+                $str = file_get_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Views/index.blade.php');
+                $str = str_replace('__defaultContent__', str_replace('\\', '/', $pathCreated), $str);
+        
+                file_put_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Views/index.blade.php', $str);
 
-        copy(__DIR__.'/Stubs/index.stub', $path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Views/index.blade.php');
-        $str = file_get_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Views/index.blade.php');
-        $str = str_replace('__defaultContent__', ucfirst($argument[0]).' / '.$argument[1], $str, $str);
+            // controller
+                $conName = lcfirst($arguments[count($arguments) - 1]).'Controller';
 
-        file_put_contents($path.'/'.ucfirst($argument[0]).'/'.$argument[1].'/Views/index.blade.php', $str);
+                copy(__DIR__.'/Stubs/controller.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Controllers/'.$conName.'.php');
+                $str = file_get_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Controllers/'.$conName.'.php');
+                $str = str_replace('__defaultGroup__', $pathCreated, $str);
+                $str = str_replace('__defaultClass__', $conName, $str);
 
-        $this->info("\nModul Berhasil Dibuat => url => ".$this->argument('name')."\n");
+                file_put_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Controllers/'.$conName.'.php', $str);
+
+            // model
+                copy(__DIR__.'/Stubs/model.stub', $path.'/'.str_replace('\\', '/', $pathCreated).'/Models/'.$argument[1].'.php');
+                $str = file_get_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Models/'.$argument[1].'.php');
+                $str = str_replace('__defaultGroup__', $pathCreated, $str);
+                $str = str_replace('__defaultClass__', $arguments[count($arguments) - 1], $str);
+        
+                file_put_contents($path.'/'.str_replace('\\', '/', $pathCreated).'/Models/'.$argument[1].'.php', $str);
+        
+
+            $this->info("\nModul Berhasil Dibuat => url => ".$this->argument('name')."\n");
+
+
     }
-
 }

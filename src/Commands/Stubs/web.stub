@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 |
 */
 
- Route::get('modul/__defaultName__', function () {
+ Route::get('modules/__defaultUrl__', function () {
     return view('__defaultName__::index');
 })->name('__defaultName__');
 

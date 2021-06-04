@@ -13,42 +13,41 @@ class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
     public function boot()
     {
         // For each of the registered modules, include their routes and Views
-        $this->initiateModules();
+        $this->initiateModules('Modules');
     }
 
-    private function initiateModules(){
-        $filesystem = $this->app->make('files');
+    private function initiateModules(String $path){
+        $filesystem = $this->app->make('files')->directories(app_path($path));
 
-        foreach($filesystem->directories(app_path('Modules')) as $directory) {
-            $truncate = str_replace('\\', '/', $directory);
-            $parrentName = last(explode('/', $truncate));
-            
-            foreach($filesystem->directories(app_path('/Modules/'.$parrentName)) as $modules){
-                $truncate = str_replace('\\', '/', $modules);
-                $moduleName = last(explode('/', $truncate));
+        foreach($filesystem as $modules){
+            $truncate = str_replace('\\', '/', $modules);
+            $moduleName = last(explode('/', $truncate));
 
-                if(is_dir(__DIR__.'/'.$parrentName.'/'.$moduleName.'/Views')) {
-                    $this->loadViewsFrom(__DIR__.'/'.$parrentName.'/'.$moduleName.'/Views', $moduleName);
-
-                }
+            if(is_dir(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Views')) {
+                $this->loadViewsFrom(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Views', $moduleName);
+            }else{
+                $this->initiateModules($path.'\\'.$moduleName);
             }
         }
     }
 
     public function register() {
-        $filesystem = $this->app->make('files');
 
-        foreach($filesystem->directories(app_path('Modules')) as $directory) {
-            $truncate = str_replace('\\', '/', $directory);
-            $parrentNama = last(explode('/', $truncate));
-            
-            foreach($filesystem->directories(app_path('Modules/'.$parrentNama)) as $modules){
-                $truncate = str_replace('\\', '/', $modules);
-                $moduleName = last(explode('/', $truncate));
-                
-                if(is_dir(app_path().'/Modules/'.$parrentNama.'/'.$moduleName.'/Providers/')){
-                    $this->app->register("App\\Modules\\{$parrentNama}\\{$moduleName}\\Providers\\routeServiceProvider");
-                }
+        $this->initiateProvider('Modules');
+    }
+
+    private function initiateProvider(String $path){
+        $filesystem = $this->app->make('files')->directories(app_path($path));
+
+        foreach($filesystem as $modules){
+            $truncate = str_replace('\\', '/', $modules);
+            $moduleName = last(explode('/', $truncate));
+            $pathProvider = str_replace('\\', '/', $path);
+
+            if(is_dir(app_path().'/'.str_replace('\\', '/', $path).'/'.$moduleName.'/Providers')) {
+                $this->app->register("App\\{$path}\\{$moduleName}\\Providers\\routeServiceProvider");
+            }else{
+                $this->initiateProvider($path.'\\'.$moduleName);
             }
         }
     }

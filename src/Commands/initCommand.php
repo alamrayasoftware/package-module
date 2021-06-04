@@ -39,7 +39,7 @@ class initCommand extends Command
      */
     public function handle()
     {
-        $path = app_path('Modules');
+        $path = app_path().'\Modules';
 
         if(file_exists($path)){
             $this->info('Folder modules sudah ada. Gagal melakukan inisialisasi..!');

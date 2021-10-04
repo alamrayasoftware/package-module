@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Modules\Master\Item\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Modules\Master\Item\Models\Item;
+use Illuminate\Http\Request;
+
+class ItemController extends Controller
+{
+    public function index()
+    {
+        $listItems = Item::orderBy('sku')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $listItems
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $newData = new Item();
+            $newData->name = $request->name ?? '-';
+            $newData->sku = $request->sku ?? '-';
+            $newData->save();
+    
+            return response()->json([
+                'status' => 'success',
+                'data' => $newData
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            $item = Item::find($id);
+            return response()->json([
+                'status' => 'success',
+                'data' => $item
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $data = Item::where('id', $id)
+                ->firstOrFail();
+            $data->sku = $request->sku ?? $data->sku;
+            $data->name = $request->name ?? $data->name;
+            $data->save();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $data
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $data = Item::where('id', $id)->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $data
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ], 400);
+        }
+    }
+}

@@ -23,7 +23,7 @@ class makeModuleCommand extends Command
         if (!file_exists($path)) {
             $this->info(" Modul belum terinisialisasi");
             $this->info(" Gunakan perintah \"php artisan armodule:init\" untuk melakukan inisialisasi");
-            return 0;
+            return false;
         }
 
         // validate duplicate module name
@@ -54,8 +54,7 @@ class makeModuleCommand extends Command
         // inisialisasi path
         $pathCreated = '';
         foreach ($arguments as $key => $argument) {
-            $pathCreated .= ucfirst($argument . DIRECTORY_SEPARATOR);
-            $pathCreated = rtrim($pathCreated, DIRECTORY_SEPARATOR);
+            $pathCreated .= ucfirst($argument);
             $fullPath = $path . DIRECTORY_SEPARATOR . $pathCreated;
 
             if (!file_exists($fullPath)) {
@@ -66,7 +65,9 @@ class makeModuleCommand extends Command
                     return false;
                 }
             }
+            $pathCreated .= DIRECTORY_SEPARATOR;
         }
+        $pathCreated = rtrim($pathCreated, DIRECTORY_SEPARATOR);
 
         $this->info('Inisialisasi modul ' . $pathCreated . "\r\n");
 

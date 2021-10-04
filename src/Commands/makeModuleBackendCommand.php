@@ -77,38 +77,51 @@ class makeModuleBackendCommand extends Command
         $modulePath = $path . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
 
         // copy route-service-provider
-        if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Providers')) {
-            mkdir($modulePath . DIRECTORY_SEPARATOR . 'Providers');
+        if (!is_dir($modulePath . 'Providers')) {
+            mkdir($modulePath . 'Providers');
         }
+        $moduleRouteServiceProviderPath = $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php';
         copy(
             $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.stub',
-            $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php'
+            $moduleRouteServiceProviderPath
         );
+        $tempContent = file_get_contents($moduleRouteServiceProviderPath);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('service-providers copied ' . $pathCreated . "\r\n");
+
         // copy route-api
-        if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Routes')) {
-            mkdir($modulePath . DIRECTORY_SEPARATOR . 'Routes');
+        if (!is_dir($modulePath . 'Routes')) {
+            mkdir($modulePath . 'Routes');
         }
+        $moduleRoutePath = $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php';
         copy(
             $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.stub',
-            $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php'
+            $moduleRoutePath
         );
+        $tempContent = file_get_contents($moduleRoutePath);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        file_put_contents($moduleRoutePath, $tempContent);
         $this->info('routes copied ' . $pathCreated . "\r\n");
 
         // copy controllers
-        if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Controllers')) {
-            mkdir($modulePath . DIRECTORY_SEPARATOR . 'Controllers');
+        if (!is_dir($modulePath . 'Controllers')) {
+            mkdir($modulePath . 'Controllers');
         }
         $controllerName = $childName . 'Controller';
+        $moduleControllerPath = $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
         copy(
             $stubPath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.stub',
-            $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php'
+            $moduleControllerPath
         );
+        $tempContent = file_get_contents($moduleControllerPath);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        file_put_contents($moduleControllerPath, $tempContent);
         $this->info('controllers copied ' . $pathCreated . "\r\n");
 
         // copy models
-        if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Models')) {
-            mkdir($modulePath . DIRECTORY_SEPARATOR . 'Models');
+        if (!is_dir($modulePath . 'Models')) {
+            mkdir($modulePath . 'Models');
         }
         $modelStubPath = $stubPath . 'Models';
         if (is_dir($modelStubPath)) {
@@ -118,10 +131,14 @@ class makeModuleBackendCommand extends Command
                     continue;
                 }
                 $modelName = str_replace('.stub', '.php', $file);
+                $moduleModelPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $modelName;
                 copy(
                     $modelStubPath . DIRECTORY_SEPARATOR . $file,
-                    $modulePath . 'Models' . DIRECTORY_SEPARATOR . $modelName
+                    $moduleModelPath
                 );
+                $tempContent = file_get_contents($moduleModelPath);
+                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+                file_put_contents($moduleModelPath, $tempContent);
             }
             closedir($modelDirectory);
         }

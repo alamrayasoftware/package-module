@@ -6,9 +6,9 @@ use Illuminate\Console\Command;
 
 class makeModuleBackendCommand extends Command
 {
-    protected $signature = 'armodule:make-module-backend {name : The name of the class}';
-    protected $name = 'armodule:make-module-backend';
-    protected $description = 'Membuat Module Untuk Project Arsoft';
+    protected $signature = 'armodule:make-backend {name : The name of the class}';
+    protected $name = 'armodule:make-backend';
+    protected $description = 'Membuat modul backend';
 
     public function __construct()
     {
@@ -21,8 +21,8 @@ class makeModuleBackendCommand extends Command
 
         // validate module initialized
         if (!file_exists($path)) {
-            $this->info(" Modul belum terinisialisasi");
-            $this->info(" Gunakan perintah \"php artisan armodule:init\" untuk melakukan inisialisasi");
+            $this->info(" Modul backend belum terinisialisasi");
+            $this->info(" Gunakan perintah \"php artisan armodule:init-backend\" untuk melakukan inisialisasi");
             return false;
         }
 

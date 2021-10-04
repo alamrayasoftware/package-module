@@ -43,10 +43,10 @@ class makeModuleCommand extends Command
         // validate is module exist
         $parentName = ucfirst($arguments[0]);
         $childName = ucfirst($arguments[1]);
-        if (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . $parentName)) {
+        if (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . $parentName)) {
             $this->info('Modul ' . $parentName . ' tidak ditemukan');
             return false;
-        } elseif (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . $parentName . DIRECTORY_SEPARATOR . $childName)) {
+        } elseif (!file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . $parentName . DIRECTORY_SEPARATOR . $childName)) {
             $this->info('Modul ' . $parentName . DIRECTORY_SEPARATOR . $childName . ' tidak ditemukan');
             return false;
         }
@@ -71,7 +71,7 @@ class makeModuleCommand extends Command
         $this->info('Inisialisasi modul ' . $pathCreated . "\r\n");
 
         // stub path
-        $stubPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . $pathCreated . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+        $stubPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
         // module path
         $modulePath = $path . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
 

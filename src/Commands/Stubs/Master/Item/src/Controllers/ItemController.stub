@@ -1,9 +1,9 @@
 <?php
 
-namespace __defaultNamespace__Master\Item\Controllers;
+namespace __defaultNamespace__Controllers;
 
 use App\Http\Controllers\Controller;
-use __defaultNamespace__Master\Item\Models\Item;
+use __defaultNamespace__Models\Item;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller

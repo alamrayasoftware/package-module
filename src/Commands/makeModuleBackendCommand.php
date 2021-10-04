@@ -4,10 +4,10 @@ namespace Arsoft\Module\Commands;
 
 use Illuminate\Console\Command;
 
-class makeModuleCommand extends Command
+class makeModuleBackendCommand extends Command
 {
-    protected $signature = 'armodule:make-module {name : The name of the class}';
-    protected $name = 'armodule:make-module';
+    protected $signature = 'armodule:make-module-backend {name : The name of the class}';
+    protected $name = 'armodule:make-module-backend';
     protected $description = 'Membuat Module Untuk Project Arsoft';
 
     public function __construct()
@@ -17,7 +17,7 @@ class makeModuleCommand extends Command
 
     public function handle()
     {
-        $path = app_path('Modules');
+        $path = app_path('ModuleBackend');
 
         // validate module initialized
         if (!file_exists($path)) {

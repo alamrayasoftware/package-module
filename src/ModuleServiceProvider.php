@@ -32,7 +32,7 @@ class ModuleServiceProvider extends ServiceProvider
             $this->commands([
                 initCommand::class,
                 makeCommand::class,
-                makeModuleCommand::class,
+                makeModuleBackendCommand::class,
             ]);
         }
     }

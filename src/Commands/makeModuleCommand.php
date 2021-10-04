@@ -127,6 +127,6 @@ class makeModuleCommand extends Command
         }
         $this->info('models copied ' . $pathCreated . "\r\n");
 
-        $this->info("\nModul berhasil dibuat => url => " . $arguments . "\n");
+        $this->info("\nModul berhasil dibuat => url => " . $pathCreated . "\n");
     }
 }

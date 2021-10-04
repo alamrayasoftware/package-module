@@ -84,6 +84,7 @@ class makeModuleCommand extends Command
             $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.stub',
             $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php'
         );
+        $this->info('service-providers copied ' . $pathCreated . "\r\n");
         // copy route-api
         if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Routes')) {
             mkdir($modulePath . DIRECTORY_SEPARATOR . 'Routes');
@@ -92,6 +93,7 @@ class makeModuleCommand extends Command
             $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.stub',
             $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php'
         );
+        $this->info('routes copied ' . $pathCreated . "\r\n");
 
         // copy controllers
         if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Controllers')) {
@@ -102,6 +104,7 @@ class makeModuleCommand extends Command
             $stubPath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.stub',
             $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php'
         );
+        $this->info('controllers copied ' . $pathCreated . "\r\n");
 
         // copy models
         if (!is_dir($modulePath . DIRECTORY_SEPARATOR . 'Models')) {
@@ -119,6 +122,7 @@ class makeModuleCommand extends Command
             }
             closedir($modelDirectory);
         }
+        $this->info('models copied ' . $pathCreated . "\r\n");
 
         $this->info("\nModul berhasil dibuat => url => " . $arguments . "\n");
     }

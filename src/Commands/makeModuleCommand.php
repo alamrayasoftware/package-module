@@ -114,6 +114,9 @@ class makeModuleCommand extends Command
         if (is_dir($modelStubPath)) {
             $modelDirectory = opendir($modelStubPath);
             while (($file = readdir($modelDirectory)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
                 $modelName = str_replace('.stub', '.php', $file);
                 copy(
                     $modelStubPath . DIRECTORY_SEPARATOR . $file,

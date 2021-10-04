@@ -2,11 +2,9 @@
 
 namespace Arsoft\Module\Commands;
 
-use Arsoft\Module\config;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
-class makeCommand extends Command
+class makeModuleCommand extends Command
 {
     protected $signature = 'armodule:make-module {name : The name of the class}';
     protected $name = 'armodule:make-module';

@@ -4,8 +4,8 @@ namespace Arsoft\Module;
 
 use Illuminate\Support\ServiceProvider;
 use Arsoft\Module\Commands\initCommand;
-use Arsoft\Module\Commands\testCommand;
 use Arsoft\Module\Commands\makeCommand;
+use Arsoft\Module\Commands\makeModuleCommand;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -32,6 +32,7 @@ class ModuleServiceProvider extends ServiceProvider
             $this->commands([
                 initCommand::class,
                 makeCommand::class,
+                makeModuleCommand::class,
             ]);
         }
     }

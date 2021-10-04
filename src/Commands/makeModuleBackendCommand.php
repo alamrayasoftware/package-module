@@ -18,6 +18,7 @@ class makeModuleBackendCommand extends Command
     public function handle()
     {
         $path = app_path('ModuleBackend');
+        $nameSpace = 'App\ModuleBackend';
 
         // validate module initialized
         if (!file_exists($path)) {
@@ -75,6 +76,8 @@ class makeModuleBackendCommand extends Command
         $stubPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
         // module path
         $modulePath = $path . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
+        // namespace
+        $nameSpace = $nameSpace . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
 
         // copy route-service-provider
         if (!is_dir($modulePath . 'Providers')) {
@@ -86,7 +89,7 @@ class makeModuleBackendCommand extends Command
             $moduleRouteServiceProviderPath
         );
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('service-providers copied ' . $pathCreated . "\r\n");
 
@@ -100,7 +103,7 @@ class makeModuleBackendCommand extends Command
             $moduleRoutePath
         );
         $tempContent = file_get_contents($moduleRoutePath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         file_put_contents($moduleRoutePath, $tempContent);
         $this->info('routes copied ' . $pathCreated . "\r\n");
 
@@ -115,7 +118,7 @@ class makeModuleBackendCommand extends Command
             $moduleControllerPath
         );
         $tempContent = file_get_contents($moduleControllerPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         file_put_contents($moduleControllerPath, $tempContent);
         $this->info('controllers copied ' . $pathCreated . "\r\n");
 
@@ -137,7 +140,7 @@ class makeModuleBackendCommand extends Command
                     $moduleModelPath
                 );
                 $tempContent = file_get_contents($moduleModelPath);
-                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $modulePath), $tempContent);
+                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
                 file_put_contents($moduleModelPath, $tempContent);
             }
             closedir($modelDirectory);

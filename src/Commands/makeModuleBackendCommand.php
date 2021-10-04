@@ -111,15 +111,25 @@ class makeModuleBackendCommand extends Command
         if (!is_dir($modulePath . 'Controllers')) {
             mkdir($modulePath . 'Controllers');
         }
-        $controllerName = $childName . 'Controller';
-        $moduleControllerPath = $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
-        copy(
-            $stubPath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName . '.stub',
-            $moduleControllerPath
-        );
-        $tempContent = file_get_contents($moduleControllerPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
-        file_put_contents($moduleControllerPath, $tempContent);
+        $controllerStubPath = $stubPath . 'Controllers';
+        if (is_dir($controllerStubPath)) {
+            $controllerDirectory = opendir($controllerStubPath);
+            while (($file = readdir($controllerDirectory)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+                $controllerName = str_replace('.stub', '.php', $file);
+                $moduleControllerPath = $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName;
+                copy(
+                    $controllerStubPath . DIRECTORY_SEPARATOR . $file,
+                    $moduleControllerPath
+                );
+                $tempContent = file_get_contents($moduleControllerPath);
+                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+                file_put_contents($moduleControllerPath, $tempContent);
+            }
+            closedir($controllerDirectory);
+        }
         $this->info('controllers copied ' . $pathCreated . "\r\n");
 
         // copy models

@@ -1,6 +1,6 @@
 <?php
 
-use App\Modules\Master\Item\Controllers\ItemController;
+use App\ModuleBackend\Master\Item\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
 
 /*

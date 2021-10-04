@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\Master\Item\Controllers;
+namespace App\ModuleBackend\Master\Item\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Master\Item\Models\Item;
+use App\ModuleBackend\Master\Item\Models\Item;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller

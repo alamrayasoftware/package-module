@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Master\Item\Providers;
+namespace App\ModuleBackend\Master\Item\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ class routeServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'App\Modules\Master\Item\Controllers';
+    protected $namespace = 'App\ModuleBackend\Master\Item\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -48,6 +48,6 @@ class routeServiceProvider extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
-            ->group(app_path('Modules/Master/Item/Routes/api.php'));
+            ->group(app_path('ModuleBackend/Master/Item/Routes/api.php'));
     }
 }

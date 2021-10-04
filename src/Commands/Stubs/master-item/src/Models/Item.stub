@@ -1,6 +1,6 @@
 <?php
 
-namespace ArsoftModules\Master\Item\Models;
+namespace App\Modules\Master\Item\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

@@ -9,6 +9,6 @@ class Item extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'items';
+    protected $table = 'm_items';
     
 }

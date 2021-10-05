@@ -90,6 +90,7 @@ class makeModuleBackendCommand extends Command
         );
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+        $tempContent = str_replace('__defaultModulePath__', $modulePath, $tempContent);
         file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('service-providers copied ' . $pathCreated . "\r\n");
 

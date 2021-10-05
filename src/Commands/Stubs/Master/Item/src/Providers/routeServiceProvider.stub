@@ -48,6 +48,6 @@ class routeServiceProvider extends ServiceProvider
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
-            ->group(__defaultModulePath__ . 'Routes' . DIRECTORY_SEPARATOR . 'api.php');
+            ->group(__defaultModulePath__);
     }
 }

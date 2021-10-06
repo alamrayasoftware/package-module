@@ -20,11 +20,14 @@ class makeModuleFrontendCommand extends Command
         $path = app_path('ModuleFrontend');
         $nameSpace = 'App\ModuleFrontend';
 
+        // validate module initialized
         if (!file_exists($path)) {
             $this->info(" Modul frontend belum terinisialisasi");
             $this->info(" Gunakan perintah \"php artisan armodule:init-frontend\" untuk melakukan inisialisasi");
             return false;
         }
+
+        // validate duplicate module name
         $tempArgument = str_replace('/', DIRECTORY_SEPARATOR, $this->argument('name'));
         if (file_exists($path . DIRECTORY_SEPARATOR . $tempArgument)) {
             $this->info("Modul \"" . $this->argument('name') . "\" sudah ada, gunakan nama yang berbeda \n");
@@ -52,6 +55,7 @@ class makeModuleFrontendCommand extends Command
                     return false;
                 }
             }
+            $pathCreated .= DIRECTORY_SEPARATOR;
         }
         $pathCreated = rtrim($pathCreated, DIRECTORY_SEPARATOR);
 

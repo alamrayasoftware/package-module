@@ -94,6 +94,9 @@ class makeModuleFrontendCommand extends Command
         $this->info('routes copied ' . $pathCreated . "\n");
 
         // copy index.blade
+        if (!is_dir($modulePath . 'Views')) {
+            mkdir($modulePath . 'Views');
+        }
         $moduleBladePath = $modulePath . 'Views' . DIRECTORY_SEPARATOR . 'index.blade.php';
         copy(
             $stubPath . 'index.blade.php', 

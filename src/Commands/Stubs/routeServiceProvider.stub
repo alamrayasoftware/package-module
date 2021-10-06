@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\__defaultNamespace__\Providers;
+namespace __defaultNamespace__Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ class routeServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'App\Modules\__defaultNamespace__\Controllers';
+    protected $namespace = '__defaultNamespace__Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -23,8 +23,6 @@ class routeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
-
         parent::boot();
     }
 
@@ -33,14 +31,9 @@ class routeServiceProvider extends ServiceProvider
      *
      * @return void
      */
-
     public function map()
     {
-        $this->mapApiRoutes();
-
         $this->mapWebRoutes();
-
-        //
     }
 
     /**
@@ -54,21 +47,6 @@ class routeServiceProvider extends ServiceProvider
     {
         Route::middleware('web')
             ->namespace($this->namespace)
-            ->group(app_path('Modules/__defaultPattern__/Routes/web.php'));
-    }
-
-    /**
-     * Define the "api" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapApiRoutes()
-    {
-        Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(app_path('Modules/__defaultPattern__/Routes/api.php'));
+            ->group(__defaultModulePath__);
     }
 }

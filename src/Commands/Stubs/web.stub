@@ -13,8 +13,3 @@ use Illuminate\Support\Facades\Hash;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
- Route::get('modules/__defaultUrl__', function () {
-    return view('__defaultName__::index');
-})->name('__defaultName__');
-

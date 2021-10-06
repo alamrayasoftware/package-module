@@ -85,7 +85,7 @@ class makeModuleBackendCommand extends Command
         }
         $moduleRouteServiceProviderPath = $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php';
         copy(
-            $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.stub',
+            $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php',
             $moduleRouteServiceProviderPath
         );
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
@@ -101,7 +101,7 @@ class makeModuleBackendCommand extends Command
         }
         $moduleRoutePath = $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php';
         copy(
-            $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.stub',
+            $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php',
             $moduleRoutePath
         );
         $tempContent = file_get_contents($moduleRoutePath);
@@ -120,8 +120,7 @@ class makeModuleBackendCommand extends Command
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                $controllerName = str_replace('.stub', '.php', $file);
-                $moduleControllerPath = $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $controllerName;
+                $moduleControllerPath = $modulePath . 'Controllers' . DIRECTORY_SEPARATOR . $file;
                 copy(
                     $controllerStubPath . DIRECTORY_SEPARATOR . $file,
                     $moduleControllerPath
@@ -145,8 +144,7 @@ class makeModuleBackendCommand extends Command
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                $modelName = str_replace('.stub', '.php', $file);
-                $moduleModelPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $modelName;
+                $moduleModelPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $file;
                 copy(
                     $modelStubPath . DIRECTORY_SEPARATOR . $file,
                     $moduleModelPath

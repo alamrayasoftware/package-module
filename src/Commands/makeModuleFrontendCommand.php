@@ -72,7 +72,7 @@ class makeModuleFrontendCommand extends Command
         }
         $moduleRouteServiceProviderPath = $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php';
         copy(
-            $stubPath . 'routeServiceProvider.stub',
+            $stubPath . 'routeServiceProvider.php',
             $moduleRouteServiceProviderPath
         );
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
@@ -88,7 +88,7 @@ class makeModuleFrontendCommand extends Command
         }
         $moduleRoutePath = $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'web.php';
         copy(
-            $stubPath . 'web.stub',
+            $stubPath . 'web.php',
             $moduleRoutePath
         );
         $this->info('routes copied ' . $pathCreated . "\n");
@@ -96,7 +96,7 @@ class makeModuleFrontendCommand extends Command
         // copy index.blade
         $moduleBladePath = $modulePath . 'Views' . DIRECTORY_SEPARATOR . 'index.blade.php';
         copy(
-            $stubPath . 'index.stub', 
+            $stubPath . 'index.blade.php', 
             $moduleBladePath
         );
         $this->info('index.blade copied ' . $pathCreated . "\n");

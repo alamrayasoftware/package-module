@@ -1,7 +1,9 @@
 <?php 
 namespace App\Modules;
- 
-class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
+
+use Illuminate\Support\ServiceProvider;
+
+class moduleFrontendServiceProvider extends ServiceProvider
 {
 
     protected $path = '';

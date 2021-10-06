@@ -1,0 +1,53 @@
+<?php 
+namespace App\Modules;
+ 
+class moduleServiceProvider extends \Illuminate\Support\ServiceProvider
+{
+
+    protected $path = '';
+
+    /**
+     * Will make sure that the required modules have been fully loaded
+     * @return void
+     */
+    public function boot()
+    {
+        // For each of the registered modules, include their routes and Views
+        $this->initiateModules('ModuleFrontend');
+    }
+
+    private function initiateModules(String $path){
+        $filesystem = $this->app->make('files')->directories(app_path($path));
+
+        foreach($filesystem as $modules){
+            $moduleName = last(explode(DIRECTORY_SEPARATOR, $modules));
+            $viewPath = app_path() . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'Views';
+            if(is_dir($viewPath)) {
+                $this->loadViewsFrom($viewPath, $moduleName);
+            }else{
+                $this->initiateModules($path . DIRECTORY_SEPARATOR . $moduleName);
+            }
+        }
+    }
+
+    public function register() 
+    {
+        $this->initiateProvider('ModuleFrontend');
+    }
+
+    private function initiateProvider(String $path){
+        $filesystem = $this->app->make('files')->directories(app_path($path));
+
+        foreach($filesystem as $modules) {
+            $moduleName = last(explode(DIRECTORY_SEPARATOR, $modules));
+
+            if(is_dir(app_path() . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'Providers')) {
+                $path = str_replace(DIRECTORY_SEPARATOR, '\\', $path);
+                $this->app->register("App\\{$path}\\{$moduleName}\\Providers\\routeServiceProvider");
+            }else{
+                $this->initiateProvider($path . DIRECTORY_SEPARATOR . $moduleName);
+            }
+        }
+    }
+
+}

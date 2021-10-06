@@ -46,12 +46,7 @@ class initModuleFrontendCommand extends Command
         }
 
         // make parent directory
-        if (mkdir($path)) {
-            foreach (config::getParrentModules() as $key => $parrent) {
-                // make child directory
-                mkdir($path . '/' . $parrent);
-            }
-        }
+        mkdir($path);
         // copy module service-provider
         copy(
             __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'moduleFrontendServiceProvider.stub',

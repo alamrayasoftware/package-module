@@ -49,7 +49,7 @@ class initModuleFrontendCommand extends Command
         mkdir($path);
         // copy module service-provider
         copy(
-            __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'moduleFrontendServiceProvider.stub',
+            __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'moduleFrontendServiceProvider.php',
             $path . DIRECTORY_SEPARATOR . 'moduleFrontendServiceProvider.php'
         );
 

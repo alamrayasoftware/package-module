@@ -1,9 +1,9 @@
 <?php
 
-namespace __defaultNamespace__Controllers;
+namespace __defaultNamespace__\Controllers;
 
 use App\Http\Controllers\Controller;
-use __defaultNamespace__Models\Item;
+use __defaultNamespace__\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

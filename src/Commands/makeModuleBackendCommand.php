@@ -78,7 +78,7 @@ class makeModuleBackendCommand extends Command
         // module path
         $modulePath = $path . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
         // namespace
-        $nameSpace = $nameSpace . '\\' . $pathCreated;
+        $nameSpace = $nameSpace . DIRECTORY_SEPARATOR . $pathCreated;
 
         // copy route-service-provider
         if (!is_dir($modulePath . 'Providers')) {

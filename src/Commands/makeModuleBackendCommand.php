@@ -146,6 +146,7 @@ class makeModuleBackendCommand extends Command
         $tempContent = file_get_contents($modelStubPath);
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         $tempContent = str_replace('__childModuleName__', $childModuleName, $tempContent);
+        $tempContent = str_replace('__childModuleNameLC__', strtolower($childModuleName), $tempContent);
         file_put_contents($modelStubPath, $tempContent);
         $this->info('models copied ' . $pathCreated . "\r\n");
 

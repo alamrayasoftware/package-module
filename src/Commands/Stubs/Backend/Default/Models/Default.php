@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class __childModuleName__ extends Model
 {
-    protected $table = '__childModuleName__';
+    protected $table = '__childModuleNameLC__';
 }

@@ -30,10 +30,9 @@ class moduleBackendServiceProvider extends ServiceProvider
 
         foreach ($filesystem as $modules) {
             $moduleName = last(explode(DIRECTORY_SEPARATOR, $modules));
-
             if (is_dir(app_path() . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $moduleName . DIRECTORY_SEPARATOR . 'Providers')) {
-                $path = str_replace(DIRECTORY_SEPARATOR, '\\', $path);
-                $this->app->register("App\\{$path}\\{$moduleName}\\Providers\\routeServiceProvider");
+                $tempPath = str_replace(DIRECTORY_SEPARATOR, '\\', $path);
+                $this->app->register("App\\{$tempPath}\\{$moduleName}\\Providers\\routeServiceProvider");
             } else {
                 $this->initiateProvider($path . DIRECTORY_SEPARATOR . $moduleName);
             }

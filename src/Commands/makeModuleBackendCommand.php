@@ -114,6 +114,8 @@ class makeModuleBackendCommand extends Command
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         $tempContent = str_replace('__childModuleName__', $childModuleName, $tempContent);
         $tempContent = str_replace('__parentModuleName__', $parentModuleName, $tempContent);
+        $tempContent = str_replace('__childModuleNameLC__', strtolower($childModuleName), $tempContent);
+        $tempContent = str_replace('__parentModuleNameLC__', strtolower($parentModuleName), $tempContent);
         file_put_contents($moduleRoutePath, $tempContent);
         $this->info('routes copied ' . $pathCreated . "\r\n");
 

@@ -4,6 +4,8 @@ namespace __defaultNamespace__Controllers;
 
 use App\Http\Controllers\Controller;
 use __defaultNamespace__Models\Company;
+use __defaultNamespace__Requests\StoreRequest;
+use __defaultNamespace__Requests\UpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -12,8 +14,7 @@ class CompanyController extends Controller
 {
     public function index(Request $request)
     {
-        $listCompanies = Company::orderBy('name')
-            ->get();
+        $listCompanies = Company::orderBy('name')->get();
 
         Log::info('get-list-companies', ['user' => $request->user() ?? null]);
         return response()->json([
@@ -22,20 +23,25 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         DB::beginTransaction();
         try {
             $newData = new Company();
-            $newData->name = $request->name ?? '-';
+            $newData->name = $request->name;
             $newData->company_parent_id = $request->company_parent_id;
             $newData->code = $request->code;
             $newData->phone = $request->phone;
             $newData->email = $request->email;
             $newData->address = $request->address;
+            // insert image and get the path
+            $imagePath = $request->image;
+            $newData->image = $imagePath;
             $newData->province_id = $request->province_id;
             $newData->city_id = $request->city_id;
             $newData->district_id = $request->district_id;
+            $newData->type = $request->type;
+            $newData->ownership_type = $request->ownership_type;
             $newData->account_first_period = now()->parse($request->account_first_period ?? now());
             $newData->save();
 
@@ -61,7 +67,7 @@ class CompanyController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $company = Company::find($id);
+            $company = Company::findOrFail($id);
 
             Log::info('show-company', ['user' => $request->user() ?? null]);
             return response()->json([
@@ -80,21 +86,25 @@ class CompanyController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
         DB::beginTransaction();
         try {
-            $data = Company::where('id', $id)
-                ->firstOrFail();
+            $data = Company::findOrFail($id);
             $data->name = $request->name;
             $data->company_parent_id = $request->company_parent_id;
             $data->code = $request->code;
             $data->phone = $request->phone;
             $data->email = $request->email;
             $data->address = $request->address;
+            // insert image and get the path
+            $imagePath = $request->image;
+            $data->image = $imagePath;
             $data->province_id = $request->province_id;
             $data->city_id = $request->city_id;
             $data->district_id = $request->district_id;
+            $data->type = $request->type;
+            $data->ownership_type = $request->ownership_type;
             $data->account_first_period = now()->parse($request->account_first_period ?? now());
             $data->save();
 
@@ -121,7 +131,7 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = Company::where('id', $id)->delete();
+            $data = Company::destroy($id);
 
             DB::commit();
             Log::info('delete-company', ['user' => $request->user() ?? null]);

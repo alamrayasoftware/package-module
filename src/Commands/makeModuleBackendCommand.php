@@ -163,36 +163,6 @@ class makeModuleBackendCommand extends Command
         // namespace
         $nameSpace = $nameSpace . DIRECTORY_SEPARATOR . $pathCreated;
 
-        // copy route-service-provider
-        if (!is_dir($modulePath . 'Providers')) {
-            mkdir($modulePath . 'Providers');
-        }
-        $moduleRouteServiceProviderPath = $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php';
-        copy(
-            $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php',
-            $moduleRouteServiceProviderPath
-        );
-        $tempContent = file_get_contents($moduleRouteServiceProviderPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
-        $tempPath = "app_path('ModuleBackend" . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR . "api.php')";
-        $tempContent = str_replace('__defaultModulePath__', $tempPath, $tempContent);
-        file_put_contents($moduleRouteServiceProviderPath, $tempContent);
-        $this->info('service-providers copied ' . $pathCreated . "\r\n");
-
-        // copy route-api
-        if (!is_dir($modulePath . 'Routes')) {
-            mkdir($modulePath . 'Routes');
-        }
-        $moduleRoutePath = $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php';
-        copy(
-            $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php',
-            $moduleRoutePath
-        );
-        $tempContent = file_get_contents($moduleRoutePath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
-        file_put_contents($moduleRoutePath, $tempContent);
-        $this->info('routes copied ' . $pathCreated . "\r\n");
-
         // copy controllers
         if (!is_dir($modulePath . 'Controllers')) {
             mkdir($modulePath . 'Controllers');
@@ -240,6 +210,59 @@ class makeModuleBackendCommand extends Command
             closedir($modelDirectory);
         }
         
+        // copy route-service-provider
+        if (!is_dir($modulePath . 'Providers')) {
+            mkdir($modulePath . 'Providers');
+        }
+        $moduleRouteServiceProviderPath = $modulePath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php';
+        copy(
+            $stubPath . 'Providers' . DIRECTORY_SEPARATOR . 'routeServiceProvider.php',
+            $moduleRouteServiceProviderPath
+        );
+        $tempContent = file_get_contents($moduleRouteServiceProviderPath);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+        $tempPath = "app_path('ModuleBackend" . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR . "api.php')";
+        $tempContent = str_replace('__defaultModulePath__', $tempPath, $tempContent);
+        file_put_contents($moduleRouteServiceProviderPath, $tempContent);
+        $this->info('service-providers copied ' . $pathCreated . "\r\n");
+
+        // copy form requests
+        if (!is_dir($modulePath . 'Requests')) {
+            mkdir($modulePath . 'Requests');
+        }
+        $requestStubPath = $stubPath . 'Requests';
+        if (is_dir($requestStubPath)) {
+            $requestDirectory = opendir($requestStubPath);
+            while (($file = readdir($requestDirectory)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+                $moduleRequestPath = $modulePath . 'Requests' . DIRECTORY_SEPARATOR . $file;
+                copy(
+                    $requestStubPath . DIRECTORY_SEPARATOR . $file,
+                    $moduleRequestPath
+                );
+                $tempContent = file_get_contents($moduleRequestPath);
+                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+                file_put_contents($moduleRequestPath, $tempContent);
+            }
+            closedir($requestDirectory);
+        }
+
+        // copy route-api
+        if (!is_dir($modulePath . 'Routes')) {
+            mkdir($modulePath . 'Routes');
+        }
+        $moduleRoutePath = $modulePath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php';
+        copy(
+            $stubPath . 'Routes' . DIRECTORY_SEPARATOR . 'api.php',
+            $moduleRoutePath
+        );
+        $tempContent = file_get_contents($moduleRoutePath);
+        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+        file_put_contents($moduleRoutePath, $tempContent);
+        $this->info('routes copied ' . $pathCreated . "\r\n");
+
         $this->info('models copied ' . $pathCreated . "\r\n");
     }
 }

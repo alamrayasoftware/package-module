@@ -32,7 +32,6 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|numeric',
             'name' => 'required|min:5',
             'company_parent_id' => 'nullable',
             'code' => 'nullable|min:5|max:15',

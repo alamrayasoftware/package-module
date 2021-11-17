@@ -131,13 +131,12 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = Company::destroy($id);
+            Company::destroy($id);
 
             DB::commit();
             Log::info('delete-company', ['user' => $request->user() ?? null]);
             return response()->json([
-                'status' => 'success',
-                'data' => $data
+                'status' => 'success'
             ]);
         } catch (\Throwable $th) {
             Log::error('delete-company', [

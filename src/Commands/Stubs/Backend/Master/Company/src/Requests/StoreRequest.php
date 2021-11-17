@@ -47,7 +47,7 @@ class StoreRequest extends FormRequest
             'name' => 'required|min:5',
             'company_parent_id' => 'nullable',
             'code' => 'nullable|min:5|max:15',
-            'phone' => 'required|numeric|min:8|max:15',
+            'phone' => 'required|digits_between:8,15',
             'email' => 'required|email:rfc,dns',
             'address' => 'required',
             'image' => 'nullable|mimes:png,jpg',

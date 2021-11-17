@@ -4,6 +4,8 @@ namespace __defaultNamespace__\Controllers;
 
 use App\Http\Controllers\Controller;
 use __defaultNamespace__\Models\__childModuleName__;
+use __defaultNamespace__\Requests\StoreRequest;
+use __defaultNamespace__\Requests\UpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +23,7 @@ class __childModuleName__Controller extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         DB::beginTransaction();
         try {
@@ -68,7 +70,7 @@ class __childModuleName__Controller extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
         DB::beginTransaction();
         try {

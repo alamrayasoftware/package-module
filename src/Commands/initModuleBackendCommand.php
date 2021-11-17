@@ -53,6 +53,19 @@ class initModuleBackendCommand extends Command
             $path . DIRECTORY_SEPARATOR . 'moduleBackendServiceProvider.php'
         );
 
+        // check and init helpers directory
+        $helperPath = app_path('Helpers');
+        if (!is_dir($helperPath)) {
+            mkdir($helperPath);
+        }
+
+        // copy helper
+        $stubHelperPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR;
+        copy(
+            $stubHelperPath . 'ResponseFormatter.php',
+            $helperPath . DIRECTORY_SEPARATOR . 'ResponseFormatter.php'
+        );
+
         $this->info('Modul backend berhasil diinisialisasi');
         $this->info('Selanjutnya Tambahkan \'App\ModuleBackend\moduleBackendServiceProvider::class\' pada file config/app.php');
         return false;

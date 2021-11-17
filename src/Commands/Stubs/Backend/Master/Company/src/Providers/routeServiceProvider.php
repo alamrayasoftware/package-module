@@ -1,6 +1,6 @@
 <?php
 
-namespace __defaultNamespace__Providers;
+namespace __defaultNamespace__\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ class routeServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = '__defaultNamespace__Controllers';
+    protected $namespace = '__defaultNamespace__\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.

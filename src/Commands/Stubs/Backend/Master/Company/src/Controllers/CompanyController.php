@@ -1,11 +1,11 @@
 <?php
 
-namespace __defaultNamespace__Controllers;
+namespace __defaultNamespace__\Controllers;
 
 use App\Http\Controllers\Controller;
-use __defaultNamespace__Models\Company;
-use __defaultNamespace__Requests\StoreRequest;
-use __defaultNamespace__Requests\UpdateRequest;
+use __defaultNamespace__\Models\Company;
+use __defaultNamespace__\Requests\StoreRequest;
+use __defaultNamespace__\Requests\UpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

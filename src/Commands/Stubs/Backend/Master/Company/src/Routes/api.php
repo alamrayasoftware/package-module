@@ -1,7 +1,6 @@
 <?php
 
-use __defaultNamespace__Controllers\CompanyController;
-use __defaultNamespace__Controllers\ItemController;
+use __defaultNamespace__\Controllers\CompanyController;
 use Illuminate\Support\Facades\Route;
 
 /*

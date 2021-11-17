@@ -36,7 +36,7 @@ class CompanyController extends Controller
             $newData->address = $request->address;
             // insert image and get the path
             $imagePath = $request->image;
-            $newData->image = $imagePath;
+            $newData->image_path = $imagePath;
             $newData->province_id = $request->province_id;
             $newData->city_id = $request->city_id;
             $newData->district_id = $request->district_id;

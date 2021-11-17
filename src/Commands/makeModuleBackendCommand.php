@@ -136,15 +136,26 @@ class makeModuleBackendCommand extends Command
         if (!is_dir($modulePath . 'Requests')) {
             mkdir($modulePath . 'Requests');
         }
-        $moduleRequestPath = $modulePath . 'Requests' . DIRECTORY_SEPARATOR . 'StoreRequest.php';
-        copy(
-            $stubPath . 'Requests' . DIRECTORY_SEPARATOR . 'StoreRequest.php',
-            $moduleRequestPath
-        );
-        $tempContent = file_get_contents($moduleRequestPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
-        file_put_contents($moduleRequestPath, $tempContent);
-        $this->info('form-requests copied ' . $pathCreated);
+        $requestStubPath = $stubPath . 'Requests';
+        if (is_dir($requestStubPath)) {
+            $requestDirectory = opendir($requestStubPath);
+            while (($file = readdir($requestDirectory)) !== false) {
+                if ($file === '.' || $file === '..'
+                ) {
+                    continue;
+                }
+                $moduleRequestPath = $modulePath . 'Requests' . DIRECTORY_SEPARATOR . $file;
+                copy(
+                    $requestStubPath . DIRECTORY_SEPARATOR . $file,
+                    $moduleRequestPath
+                );
+                $tempContent = file_get_contents($moduleRequestPath);
+                $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+                file_put_contents($moduleRequestPath, $tempContent);
+            }
+            closedir($requestDirectory);
+        }
+        $this->info('form-request copied ' . $pathCreated);
 
         // copy route-api
         if (!is_dir($modulePath . 'Routes')) {

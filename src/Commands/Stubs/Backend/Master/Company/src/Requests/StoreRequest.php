@@ -2,7 +2,10 @@
 
 namespace __defaultNamespace__\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
@@ -13,15 +16,24 @@ class StoreRequest extends FormRequest
      * @var bool
      */
     protected $stopOnFirstFailure = true;
-    
+
     /**
-     * Determine if the user is authorized to make this request.
+     * Handle a failed validation attempt.
      *
-     * @return bool
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function authorize()
+    protected function failedValidation(Validator $validator)
     {
-        return false;
+        $errors = $validator->errors();
+        throw new HttpResponseException(
+            response()->json([
+                'status' => 'error',
+                'errors' => $errors
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+        );
     }
 
     /**

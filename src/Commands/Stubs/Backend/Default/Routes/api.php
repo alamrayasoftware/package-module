@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::prefix('__parentModuleNameLC__/__childModuleNameLC__')->group(function () {
         Route::get('/', [__childModuleName__Controller::class, 'index']);
         Route::post('/', [__childModuleName__Controller::class, 'store']);

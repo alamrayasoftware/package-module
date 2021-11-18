@@ -57,7 +57,8 @@ class CompanyController extends Controller
             DB::rollBack();
             Log::error('store-new-company', [
                 'user' => $request->user() ?? null,
-                'context' => $th->getMessage()
+                'context' => $th->getMessage(),
+                'line' => $th->getLine()
             ]);
             return $this->responseFormatter->errorResponse($th);
         }
@@ -73,7 +74,8 @@ class CompanyController extends Controller
         } catch (\Throwable $th) {
             Log::error('show-company', [
                 'user' => $request->user() ?? null,
-                'context' => $th->getMessage()
+                'context' => $th->getMessage(),
+                'line' => $th->getLine()
             ]);
             return $this->responseFormatter->errorResponse($th);
         }
@@ -108,7 +110,8 @@ class CompanyController extends Controller
             DB::rollBack();
             Log::error('update-company', [
                 'user' => $request->user() ?? null,
-                'context' => $th->getMessage()
+                'context' => $th->getMessage(),
+                'line' => $th->getLine()
             ]);
             return $this->responseFormatter->errorResponse($th);
         }
@@ -124,9 +127,11 @@ class CompanyController extends Controller
             Log::info('delete-company', ['user' => $request->user() ?? null]);
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::error('delete-company', [
                 'user' => $request->user() ?? null,
-                'context' => $th->getMessage()
+                'context' => $th->getMessage(),
+                'line' => $th->getLine()
             ]);
             return $this->responseFormatter->errorResponse($th);
         }

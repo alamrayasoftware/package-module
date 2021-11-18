@@ -100,21 +100,21 @@ class makeModuleBackendCommand extends Command
         file_put_contents($moduleControllerPath, $tempContent);
         $this->info('controllers copied ' . $pathCreated);
 
-        // copy models
-        if (!is_dir($modulePath . 'Models')) {
-            mkdir($modulePath . 'Models');
-        }
-        $modelStubPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $childModuleName . '.php';
-        copy(
-            $stubPath . 'Models' . DIRECTORY_SEPARATOR . 'Default.php',
-            $modelStubPath
-        );
-        $tempContent = file_get_contents($modelStubPath);
-        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
-        $tempContent = str_replace('__childModuleName__', $childModuleName, $tempContent);
-        $tempContent = str_replace('__childModuleNameLC__', strtolower($childModuleName), $tempContent);
-        file_put_contents($modelStubPath, $tempContent);
-        $this->info('models copied ' . $pathCreated);
+        // // copy models
+        // if (!is_dir($modulePath . 'Models')) {
+        //     mkdir($modulePath . 'Models');
+        // }
+        // $modelStubPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $childModuleName . '.php';
+        // copy(
+        //     $stubPath . 'Models' . DIRECTORY_SEPARATOR . 'Default.php',
+        //     $modelStubPath
+        // );
+        // $tempContent = file_get_contents($modelStubPath);
+        // $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+        // $tempContent = str_replace('__childModuleName__', $childModuleName, $tempContent);
+        // $tempContent = str_replace('__childModuleNameLC__', strtolower($childModuleName), $tempContent);
+        // file_put_contents($modelStubPath, $tempContent);
+        // $this->info('models copied ' . $pathCreated);
 
         // copy route-service-provider
         if (!is_dir($modulePath . 'Providers')) {

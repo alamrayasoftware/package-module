@@ -3,7 +3,7 @@
 namespace __defaultNamespace__\Controllers;
 
 use App\Http\Controllers\Controller;
-use __defaultNamespace__\Models\Company;
+use __defaultNamespace__\Models\MCompany;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
 use App\Helpers\ResponseFormatter;
@@ -22,7 +22,7 @@ class CompanyController extends Controller
 
     public function index(Request $request)
     {
-        $listCompanies = Company::orderBy('name')->get();
+        $listCompanies = MCompany::orderBy('name')->get();
 
         Log::info('get-list-companies', ['user' => $request->user() ?? null]);
         return $this->responseFormatter->successResponse('', $listCompanies);
@@ -32,7 +32,7 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $newData = new Company();
+            $newData = new MCompany();
             $newData->name = $request->name;
             $newData->company_parent_id = $request->company_parent_id;
             $newData->code = $request->code;
@@ -67,7 +67,7 @@ class CompanyController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $company = Company::findOrFail($id);
+            $company = MCompany::findOrFail($id);
 
             Log::info('show-company', ['user' => $request->user() ?? null]);
             return $this->responseFormatter->successResponse('', $company);
@@ -85,7 +85,7 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = Company::findOrFail($id);
+            $data = MCompany::findOrFail($id);
             $data->name = $request->name;
             $data->company_parent_id = $request->company_parent_id;
             $data->code = $request->code;
@@ -121,7 +121,7 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            Company::destroy($id);
+            MCompany::destroy($id);
 
             DB::commit();
             Log::info('delete-company', ['user' => $request->user() ?? null]);

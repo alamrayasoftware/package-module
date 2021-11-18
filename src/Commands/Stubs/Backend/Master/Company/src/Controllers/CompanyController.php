@@ -6,21 +6,26 @@ use App\Http\Controllers\Controller;
 use __defaultNamespace__\Models\Company;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
+use App\Helpers\ResponseFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
+    public $responseFormatter = null;
+
+    public function __construct()
+    {
+        $this->responseFormatter = new ResponseFormatter();
+    }
+
     public function index(Request $request)
     {
         $listCompanies = Company::orderBy('name')->get();
 
         Log::info('get-list-companies', ['user' => $request->user() ?? null]);
-        return response()->json([
-            'status' => 'success',
-            'data' => $listCompanies
-        ]);
+        return $this->responseFormatter->successResponse('', $listCompanies);
     }
 
     public function store(StoreRequest $request)
@@ -47,20 +52,14 @@ class CompanyController extends Controller
 
             DB::commit();
             Log::info('store-new-company', ['user' => $request->user() ?? null]);
-            return response()->json([
-                'status' => 'success',
-                'data' => $newData
-            ]);
+            return $this->responseFormatter->successResponse('', $newData);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('store-new-company', [
                 'user' => $request->user() ?? null,
                 'context' => $th->getMessage()
             ]);
-            return response()->json([
-                'status' => 'error',
-                'message' => $th->getMessage()
-            ], 400);
+            return $this->responseFormatter->errorResponse($th);
         }
     }
 
@@ -70,19 +69,13 @@ class CompanyController extends Controller
             $company = Company::findOrFail($id);
 
             Log::info('show-company', ['user' => $request->user() ?? null]);
-            return response()->json([
-                'status' => 'success',
-                'data' => $company
-            ]);
+            return $this->responseFormatter->successResponse('', $company);
         } catch (\Throwable $th) {
             Log::error('show-company', [
                 'user' => $request->user() ?? null,
                 'context' => $th->getMessage()
             ]);
-            return response()->json([
-                'status' => 'error',
-                'message' => $th->getMessage()
-            ], 400);
+            return $this->responseFormatter->errorResponse($th);
         }
     }
 
@@ -110,20 +103,14 @@ class CompanyController extends Controller
 
             DB::commit();
             Log::info('update-company', ['user' => $request->user() ?? null]);
-            return response()->json([
-                'status' => 'success',
-                'data' => $data
-            ]);
+            return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('update-company', [
                 'user' => $request->user() ?? null,
                 'context' => $th->getMessage()
             ]);
-            return response()->json([
-                'status' => 'error',
-                'message' => $th->getMessage()
-            ], 400);
+            return $this->responseFormatter->errorResponse($th);
         }
     }
 
@@ -135,18 +122,13 @@ class CompanyController extends Controller
 
             DB::commit();
             Log::info('delete-company', ['user' => $request->user() ?? null]);
-            return response()->json([
-                'status' => 'success'
-            ]);
+            return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             Log::error('delete-company', [
                 'user' => $request->user() ?? null,
                 'context' => $th->getMessage()
             ]);
-            return response()->json([
-                'status' => 'error',
-                'message' => $th->getMessage()
-            ], 400);
+            return $this->responseFormatter->errorResponse($th);
         }
     }
 }

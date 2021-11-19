@@ -128,7 +128,7 @@ class makeModuleBackendCommand extends Command
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         $tempPath = "app_path('ModuleBackend" . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR . "api.php')";
-        $tempContent = str_replace('__defaultModulePath__', $tempPath, $tempContent);
+        $tempContent = str_replace('__defaultModulePath__', str_replace(DIRECTORY_SEPARATOR, '/', $tempPath), $tempContent);
         file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('service-providers copied ' . $pathCreated);
 
@@ -247,7 +247,7 @@ class makeModuleBackendCommand extends Command
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         $tempPath = "app_path('ModuleBackend" . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR . "api.php')";
-        $tempContent = str_replace('__defaultModulePath__', $tempPath, $tempContent);
+        $tempContent = str_replace('__defaultModulePath__', str_replace(DIRECTORY_SEPARATOR, '/', $tempPath), $tempContent);
         file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('service-providers copied ' . $pathCreated);
 

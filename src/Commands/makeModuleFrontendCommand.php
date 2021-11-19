@@ -80,7 +80,7 @@ class makeModuleFrontendCommand extends Command
         $tempContent = file_get_contents($moduleRouteServiceProviderPath);
         $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
         $tempPath = "app_path('ModuleFrontend" . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR . "web.php')";
-        $tempContent = str_replace('__defaultModulePath__', $tempPath, $tempContent);
+        $tempContent = str_replace('__defaultModulePath__', str_replace(DIRECTORY_SEPARATOR, '/', $tempPath), $tempContent);
         file_put_contents($moduleRouteServiceProviderPath, $tempContent);
         $this->info('route-service-providers copied ' . $pathCreated . "\n");
 

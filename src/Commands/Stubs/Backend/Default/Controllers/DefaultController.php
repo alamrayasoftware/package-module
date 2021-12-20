@@ -5,6 +5,7 @@ namespace __defaultNamespace__\Controllers;
 use App\Http\Controllers\Controller;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
+use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,11 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class __childModuleName__Controller extends Controller
 {
-    public $responseFormatter = null;
+    public $responseFormatter, $loggerHelper;
 
     public function __construct()
     {
         $this->responseFormatter = new ResponseFormatter();
+        $this->loggerHelper = new LoggerHelper();
     }
 
     public function index(Request $request)
@@ -40,11 +42,7 @@ class __childModuleName__Controller extends Controller
             return $this->responseFormatter->successResponse('', $newData);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('store', [
-                'user' => $request->user() ?? null,
-                'context' => $th->getMessage(),
-                'line' => $th->getLine()
-            ]);
+            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -58,11 +56,7 @@ class __childModuleName__Controller extends Controller
             Log::info('show-data', ['user' => $request->user() ?? null]);
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
-            Log::error('show-data', [
-                'user' => $request->user() ?? null,
-                'context' => $th->getMessage(),
-                'line' => $th->getLine()
-            ]);
+            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -79,11 +73,7 @@ class __childModuleName__Controller extends Controller
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('update-data', [
-                'user' => $request->user() ?? null,
-                'context' => $th->getMessage(),
-                'line' => $th->getLine()
-            ]);
+            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -98,11 +88,8 @@ class __childModuleName__Controller extends Controller
             Log::info('delete-data', ['user' => $request->user() ?? null]);
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
-            Log::error('delete-data', [
-                'user' => $request->user() ?? null,
-                'context' => $th->getMessage(),
-                'line' => $th->getLine()
-            ]);
+            DB::rollBack();
+            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }

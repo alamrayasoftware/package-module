@@ -8,27 +8,26 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "arsoft-modules/nota-generator": "dev-main",
+        "arsoft-modules/stock-mutation": "dev-main"
+    },
     "license": "MIT",
-
     "autoload": {
         "psr-4": {
-          "Arsoft\\Module\\": "src"
+            "Arsoft\\Module\\": "src"
         }
-      },
-  
-      "autoload-dev": {
-        "psr-4": {
-              "Arsoft\\Module\\Tests\\": "Tests"
-          }
-      },
-  
-      "extra": {
+    },
+    "autoload-dev": {
+    "psr-4": {
+            "Arsoft\\Module\\Tests\\": "Tests"
+        }
+    },
+    "extra": {
         "laravel": {
             "providers": [
                 "Arsoft\\Module\\ModuleServiceProvider"
             ]
         }
-      }
-      
+    }
 }

@@ -42,7 +42,7 @@ class __childModuleName__Controller extends Controller
             return $this->responseFormatter->successResponse('', $newData);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -56,7 +56,7 @@ class __childModuleName__Controller extends Controller
             Log::info('show-data', ['user' => $request->user() ?? null]);
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
-            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -73,7 +73,7 @@ class __childModuleName__Controller extends Controller
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -89,7 +89,7 @@ class __childModuleName__Controller extends Controller
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->uc_company_id ?? null, $request->user()->uc_user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
             return $this->responseFormatter->errorResponse($th);
         }
     }

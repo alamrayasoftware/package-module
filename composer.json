@@ -16,7 +16,10 @@
     "autoload": {
         "psr-4": {
             "Arsoft\\Module\\": "src"
-        }
+        },
+        "files": [
+            "app/Helpers/CurrencyHelper.php"
+        ]
     },
     "autoload-dev": {
     "psr-4": {

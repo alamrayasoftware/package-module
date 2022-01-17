@@ -59,11 +59,25 @@ class initModuleBackendCommand extends Command
             mkdir($helperPath);
         }
 
-        // copy helper
+        // copy response formatter helper
         $stubHelperPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR;
         copy(
             $stubHelperPath . 'ResponseFormatter.php',
             $helperPath . DIRECTORY_SEPARATOR . 'ResponseFormatter.php'
+        );
+
+        // copy response logger helper
+        $stubHelperPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR;
+        copy(
+            $stubHelperPath . 'LoggerHelper.php',
+            $helperPath . DIRECTORY_SEPARATOR . 'LoggerHelper.php'
+        );
+
+        // copy response currency helper
+        $stubHelperPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR;
+        copy(
+            $stubHelperPath . 'CurrencyHelper.php',
+            $helperPath . DIRECTORY_SEPARATOR . 'CurrencyHelper.php'
         );
 
         $this->info('Modul backend berhasil diinisialisasi');

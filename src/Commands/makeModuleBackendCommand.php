@@ -181,7 +181,7 @@ class makeModuleBackendCommand extends Command
     public function generateSpecificModule($pathCreated, $path, $nameSpace)
     {
         // stub origin path
-        $stubPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR;
+        $stubPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
         // module destination path
         $modulePath = $path . DIRECTORY_SEPARATOR . $pathCreated . DIRECTORY_SEPARATOR;
         // namespace

@@ -73,6 +73,13 @@ class initModuleBackendCommand extends Command
             $helperPath . DIRECTORY_SEPARATOR . 'LoggerHelper.php'
         );
 
+        // copy response currency helper
+        $stubHelperPath = __DIR__ . DIRECTORY_SEPARATOR . 'Stubs' . DIRECTORY_SEPARATOR . 'Backend' . DIRECTORY_SEPARATOR . 'Helpers' . DIRECTORY_SEPARATOR;
+        copy(
+            $stubHelperPath . 'CurrencyHelper.php',
+            $helperPath . DIRECTORY_SEPARATOR . 'CurrencyHelper.php'
+        );
+
         $this->info('Modul backend berhasil diinisialisasi');
         $this->info('Selanjutnya Tambahkan \'App\ModuleBackend\moduleBackendServiceProvider::class\' pada file config/app.php');
         return false;

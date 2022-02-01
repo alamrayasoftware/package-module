@@ -11,7 +11,6 @@ use App\Helpers\ResponseFormatter;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -34,12 +33,6 @@ class AuthController extends Controller
             $user->username = $request->username;
             $user->password = Hash::make($password);
             $user->save();
-
-            $dataEmail = [
-                'email' => $user->email,
-                'username' => $user->username,
-                'password' => $password,
-            ];
             
             // TODO : send mail to registered email
 

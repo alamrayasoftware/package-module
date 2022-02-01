@@ -56,13 +56,12 @@ class LoggerHelper
     /**
      * log success data
      * 
-     * @param string $message message
      * @param int $companyId current company id
      * @param int $userId current user id
      * @param array $payload payload data
      * 
      */
-    public function logDebug($message, $companyId = null, $userId = null, $payload = null)
+    public function logDebug($companyId = null, $userId = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [

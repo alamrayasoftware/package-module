@@ -10,7 +10,6 @@ use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {

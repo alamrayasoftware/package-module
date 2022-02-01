@@ -13,15 +13,17 @@ class LoggerHelper
      * @param Throwable $throwable throwable data
      * @param int $companyId current company id
      * @param int $userId current user id
+     * @param array $payload payload data
      * 
      */
-    public function logError($throwable, $companyId = null, $userId = null)
+    public function logError($throwable, $companyId = null, $userId = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [
             'company_id' => $companyId,
             'user_id' => $userId,
             'context' => $throwable->getMessage(),
+            'payload' => $payload,
             'location' => $location,
             'line' => $throwable->getLine()
         ];
@@ -34,19 +36,44 @@ class LoggerHelper
      * @param string $message message
      * @param int $companyId current company id
      * @param int $userId current user id
+     * @param array $payload payload data
      * 
      */
-    public function logSuccess($message, $companyId = null, $userId = null)
+    public function logSuccess($message, $companyId = null, $userId = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [
             'company_id' => $companyId,
             'user_id' => $userId,
             'context' => $message,
+            'payload' => $payload,
             'location' => $location,
             'line' => null
         ];
         $this->privateLogger($data, 200);
+    }
+
+    /**
+     * log success data
+     * 
+     * @param string $message message
+     * @param int $companyId current company id
+     * @param int $userId current user id
+     * @param array $payload payload data
+     * 
+     */
+    public function logDebug($message, $companyId = null, $userId = null, $payload = null)
+    {
+        $location = Route::currentRouteAction();
+        $data = [
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'context' => null,
+            'payload' => $payload,
+            'location' => $location,
+            'line' => null
+        ];
+        $this->privateLogger($data, 600);
     }
 
     /**
@@ -67,7 +94,7 @@ class LoggerHelper
                 Log::warning($data['context'], $data);
                 break;
 
-            case ($errorCode >= 500):
+            case ($errorCode >= 500 && $errorCode < 600):
                 Log::error($data['context'], $data);
                 break;
             

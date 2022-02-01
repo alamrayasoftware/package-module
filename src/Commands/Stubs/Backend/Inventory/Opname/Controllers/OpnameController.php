@@ -43,8 +43,7 @@ class OpnameController extends Controller
             ->orderByDesc('number')
             ->get();
 
-
-        $this->loggerHelper->logSuccess('index', $request->user()->company_id, $request->user()->user_id);
+        $this->loggerHelper->logSuccess('index', $request->user()->company_id, $request->user()->user_id, $request->all());
         return $this->responseFormatter->successResponse('', $opname);
     }
 
@@ -53,7 +52,7 @@ class OpnameController extends Controller
     {
         DB::beginTransaction();
         try {
-            $date = $request->date ?? now();
+            $date = now()->parse($request->date ?? now());
             $number = $request->code ?? NotaGenerator::generate('inv_opname', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
             // insert new data
             $opname = new Opname();
@@ -75,13 +74,28 @@ class OpnameController extends Controller
                 ]);
             }
             OpnameDetail::insert($listDetail);
-
+            // commit data
             DB::commit();
-            $this->loggerHelper->logSuccess('store', $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logSuccess('store', $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->successResponse('Data berhasil disimpan', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            return $this->responseFormatter->errorResponse($th);
+        }
+    }
+
+    // get specific data
+    public function show(Request $request, $id)
+    {
+        try {
+            $opname = Opname::with('financeAccount', 'warehousePosition', 'details.item')
+                ->findOrFail($id);
+    
+            $this->loggerHelper->logSuccess('show', $request->user()->company_id, $request->user()->user_id, $request->all());
+            return $this->responseFormatter->successResponse('', $opname);
+        } catch (\Throwable $th) {
+            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -103,6 +117,8 @@ class OpnameController extends Controller
             $opname->account_id = $request->account_id;
             $opname->note = $request->note;
             $opname->update();
+            // delete current details
+            OpnameDetail::where('opname_id', $opname->id)->delete();
             // update details
             $listDetail = [];
             foreach ($request->list_item_id ?? [] as $key => $item) {
@@ -113,15 +129,14 @@ class OpnameController extends Controller
                     'new_qty' => deformatCurrency($request->list_qty_new[$key] ?? 0),
                 ]);
             }
-            OpnameDetail::where('opname_id', $opname->id)->delete();
             OpnameDetail::insert($listDetail);
-
+            // commit data
             DB::commit();
-            $this->loggerHelper->logSuccess('update', $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logSuccess('update', $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->successResponse('Data berhasil diperbarui', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -139,11 +154,11 @@ class OpnameController extends Controller
             $opname->delete();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('delete', $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logSuccess('delete', $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -160,7 +175,7 @@ class OpnameController extends Controller
             }
             // insert mutation
             $mutation = new StockMutation;
-            foreach ($opname->details as $key => $detail) {
+            foreach ($opname->details as $detail) {
                 $itemId = $detail->item_id;
                 $oldQty = $detail->old_qty;
                 $currentStock = $mutation->currentStock($itemId, $opname->company_id, $opname->position_id)->getData()->curent_stock;
@@ -201,11 +216,11 @@ class OpnameController extends Controller
             $opname->update();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('approval', $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logSuccess('approval', $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id);
+            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }

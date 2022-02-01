@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Helpers;
+if (!function_exists('deformatCurrency')) {
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
-
-class CurrencyHelper
-{
     /**
      * Format currency from string to int
      * 
-     * @param string|int $currency currency data in string ( ex: 12,000.00 )
+     * @param string $currency currency data in string ( ex: 12,000.00 )
      * 
      * @return float 
      */
-    public function deformatCurrency($currency = null) {
+    function deformatCurrency(
+        string $currency = null
+    ) {
         if (!$currency) {
             return 0;
         }

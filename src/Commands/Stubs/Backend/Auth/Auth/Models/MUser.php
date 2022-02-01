@@ -11,4 +11,10 @@ class MUser extends Model
     use HasFactory, HasApiTokens;
     protected $table = 'm_users';
 
+    protected $hidden = [
+        'password',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 }

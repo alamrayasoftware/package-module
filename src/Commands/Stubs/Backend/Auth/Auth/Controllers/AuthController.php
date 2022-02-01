@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -81,4 +82,23 @@ class AuthController extends Controller
         }
     }
 
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+
+            $this->loggerHelper->logSuccess('logout', null, $request->user()->id, $request->all());
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Logout success',
+                'data' => [
+                    'user' => $request->user(),
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->loggerHelper->logError($th, null, null, $request->all());
+            return $this->responseFormatter->errorResponse($th);
+        }
+    }
 }

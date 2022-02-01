@@ -1,6 +1,6 @@
 <?php
 
-use __defaultNamespace__\Controllers\OpnameController;
+use __defaultNamespace__\Controllers\AuthController;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Route;
 

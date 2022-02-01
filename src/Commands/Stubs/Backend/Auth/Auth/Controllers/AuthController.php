@@ -3,22 +3,16 @@
 namespace __defaultNamespace__\Controllers;
 
 use __defaultNamespace__\Models\MUser;
-use __defaultNamespace__\Models\Opname;
-use __defaultNamespace__\Models\OpnameDetail;
-use __defaultNamespace__\Models\Related\Item;
 use __defaultNamespace__\Requests\LoginRequest;
+use __defaultNamespace__\Requests\RegisterRequest;
 use App\Http\Controllers\Controller;
-use __defaultNamespace__\Requests\StoreRequest;
-use __defaultNamespace__\Requests\UpdateRequest;
 use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
-use ArsoftModules\NotaGenerator\Facades\NotaGenerator;
-use ArsoftModules\StockMutation\StockMutation;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -30,6 +24,40 @@ class AuthController extends Controller
         $this->loggerHelper = new LoggerHelper();
     }
 
+    public function register(RegisterRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $password = $request->password ?? Str::random(8);
+            $user = new MUser();
+            $user->email = $request->email;
+            $user->username = $request->username;
+            $user->password = Hash::make($password);
+            $user->save();
+
+            $dataEmail = [
+                'email' => $user->email,
+                'username' => $user->username,
+                'password' => $password,
+            ];
+            
+            // TODO : send mail to registered email
+
+            DB::commit();
+            $this->loggerHelper->logSuccess('register', null, $user->id, $request->all());
+            return response()->json([
+                'status' => 'success',
+                'message' => 'register success',
+                'data' => [
+                    'user' => $user,
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->loggerHelper->logError($th, null, null, $request->all());
+            return $this->responseFormatter->errorResponse($th);
+        }
+    }
 
     public function login(LoginRequest $request)
     {
@@ -55,7 +83,7 @@ class AuthController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, null, null, $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }

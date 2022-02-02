@@ -9,7 +9,6 @@ use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class __childModuleName__Controller extends Controller
 {
@@ -26,7 +25,7 @@ class __childModuleName__Controller extends Controller
         // your code here
         $datas = [];
 
-        Log::info('get-datas', ['user' => $request->user() ?? null]);
+        $this->loggerHelper->logSuccess('index', $request->user(), $request->all());
         return $this->responseFormatter->successResponse('', $datas);
     }
 
@@ -38,11 +37,11 @@ class __childModuleName__Controller extends Controller
             $newData = null;
 
             DB::commit();
-            Log::info('store', ['user' => $request->user() ?? null]);
+            $this->loggerHelper->logSuccess('store', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $newData);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -53,10 +52,10 @@ class __childModuleName__Controller extends Controller
             // your code here
             $data = null;
 
-            Log::info('show-data', ['user' => $request->user() ?? null]);
+            $this->loggerHelper->logSuccess('show', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
-            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -69,11 +68,11 @@ class __childModuleName__Controller extends Controller
             $data = null;
 
             DB::commit();
-            Log::info('update-data', ['user' => $request->user() ?? null]);
+            $this->loggerHelper->logSuccess('update', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -85,11 +84,11 @@ class __childModuleName__Controller extends Controller
             // your code here
 
             DB::commit();
-            Log::info('delete-data', ['user' => $request->user() ?? null]);
+            $this->loggerHelper->logSuccess('delete', $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id ?? null, $request->user()->user_id ?? null);
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }

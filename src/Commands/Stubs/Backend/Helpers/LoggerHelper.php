@@ -11,21 +11,19 @@ class LoggerHelper
      * log error data
      * 
      * @param Throwable $throwable throwable data
-     * @param int $companyId current company id
-     * @param int $userId current user id
+     * @param array $user current user
      * @param array $payload payload data
      * 
      */
-    public function logError($throwable, $companyId = null, $userId = null, $payload = null)
+    public function logError($throwable, $user = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [
-            'company_id' => $companyId,
-            'user_id' => $userId,
             'context' => $throwable->getMessage(),
-            'payload' => $payload,
             'location' => $location,
-            'line' => $throwable->getLine()
+            'line' => $throwable->getLine(),
+            'user' => $user,
+            'payload' => $payload,
         ];
         $this->privateLogger($data, $throwable->getCode());
     }
@@ -34,43 +32,36 @@ class LoggerHelper
      * log success data
      * 
      * @param string $message message
-     * @param int $companyId current company id
-     * @param int $userId current user id
+     * @param array $user current user
      * @param array $payload payload data
      * 
      */
-    public function logSuccess($message, $companyId = null, $userId = null, $payload = null)
+    public function logSuccess($message, $user = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [
-            'company_id' => $companyId,
-            'user_id' => $userId,
             'context' => $message,
-            'payload' => $payload,
             'location' => $location,
-            'line' => null
+            'user' => $user,
+            'payload' => $payload,
         ];
         $this->privateLogger($data, 200);
     }
 
     /**
-     * log success data
+     * log debug data
      * 
-     * @param int $companyId current company id
-     * @param int $userId current user id
+     * @param array $user current user
      * @param array $payload payload data
      * 
      */
-    public function logDebug($companyId = null, $userId = null, $payload = null)
+    public function logDebug($user = null, $payload = null)
     {
         $location = Route::currentRouteAction();
         $data = [
-            'company_id' => $companyId,
-            'user_id' => $userId,
-            'context' => null,
-            'payload' => $payload,
             'location' => $location,
-            'line' => null
+            'user' => $user,
+            'payload' => $payload,
         ];
         $this->privateLogger($data, 600);
     }
@@ -82,9 +73,13 @@ class LoggerHelper
      * @param string $errorCode error code : 200, 401, 403, etc
      * 
      */
-    private function privateLogger($data, $errorCode)
+    private function privateLogger($data, $errorCode = false)
     {
         switch (true) {
+            case ($errorCode == false):
+                Log::debug($data['context'], $data);
+                break;
+
             case ($errorCode < 300):
                 Log::info($data['context'], $data);
                 break;

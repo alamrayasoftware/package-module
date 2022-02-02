@@ -46,10 +46,17 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'account_id' => 'nullable|exists:__defaultNamespace__\Models\Related\FinanceAccount,ak_id',
-            'position_id' => 'nullable|exists:__defaultNamespace__\Models\Related\Warehouse,id',
+            'company_id' => 'required|exists:__defaultNamespace__\Models\Related\MCompany,id',
+            'position_id' => 'required|exists:__defaultNamespace__\Models\Related\MWarehouse,id',
+            'code' => 'nullable|unique:__defaultNamespace__\Models\Opname,number',
+            'date' => 'nullable|date_format:Y-m-d',
             'list_item_id' => 'required|array',
-            'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\Item,id',
+            'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\MItem,id',
+            'list_expired_date' => 'nullable|array',
+            'list_old_qty' => 'required|array',
+            'list_new_qty' => 'required|array',
+            'list_unit_price' => 'required|array',
+            'list_note' => 'nullable|array',
         ];
     }
 

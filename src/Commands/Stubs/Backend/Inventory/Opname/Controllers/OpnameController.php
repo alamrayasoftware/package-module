@@ -5,6 +5,7 @@ namespace __defaultNamespace__\Controllers;
 use __defaultNamespace__\Models\Opname;
 use __defaultNamespace__\Models\OpnameDetail;
 use __defaultNamespace__\Models\Related\Item;
+use __defaultNamespace__\Models\Related\MItem;
 use App\Http\Controllers\Controller;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
@@ -30,21 +31,23 @@ class OpnameController extends Controller
     // get all data
     public function index(Request $request)
     {
-        $startDate = now()->startOfMonth();
-        $endDate = now()->endOfMonth();
-        if ($request->start_date) {
-            $startDate = now()->parse($request->start_date)->startOfDay();
+        $startDate = now()->parse($request->start_date ?? now()->startOfMonth())->startOfDay();
+        $endDate = now()->parse($request->end_date ?? now()->endOfMonth())->endOfDay();
+        
+        // filter by date-range
+        $opnames = Opname::whereBetween('date', [$startDate, $endDate]);
+
+        // filter by company-id
+        if ($request->company_id) {
+            $opnames = $opnames->whereCompanyId($request->company_id);
         }
-        if ($request->end_date) {
-            $endDate = now()->parse($request->end_date)->endOfDay();
-        }
-        $opname = Opname::whereBetween('date', [$startDate, $endDate])
-            ->with('financeAccount', 'warehousePosition', 'details.item')
+
+        $opnames = $opnames->with('financeAccount', 'warehousePosition', 'details.item')
             ->orderByDesc('number')
             ->get();
 
-        $this->loggerHelper->logSuccess('index', $request->user()->company_id, $request->user()->user_id, $request->all());
-        return $this->responseFormatter->successResponse('', $opname);
+        $this->loggerHelper->logSuccess('index', $request->user(), $request->all());
+        return $this->responseFormatter->successResponse('', $opnames);
     }
 
     // store new data
@@ -52,35 +55,39 @@ class OpnameController extends Controller
     {
         DB::beginTransaction();
         try {
-            $date = now()->parse($request->date ?? now());
-            $number = $request->code ?? NotaGenerator::generate('inv_opname', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
+            $number = $request->code ?? NotaGenerator::generate('inv_opnames', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
+
             // insert new data
+            $date = now()->parse($request->date ?? now());
             $opname = new Opname();
-            $opname->company_id = $request->user()->company_id;
-            $opname->position_id = $request->position_id;
-            $opname->account_id = $request->account_id;
+            $opname->company_id = $request->company_id;
+            $opname->warehouse_id = $request->warehouse_id;
             $opname->number = $number;
             $opname->date = $date;
             $opname->note = $request->note;
             $opname->save();
+
             // insert details
             $listDetail = [];
-            foreach ($request->list_item_id ?? [] as $key => $item) {
+            foreach ($request->list_item_id ?? [] as $key => $itemId) {
                 array_push($listDetail, [
                     'opname_id' => $opname->id,
-                    'item_id' => $item,
-                    'old_qty' => deformatCurrency($request->list_qty_system[$key] ?? 0),
+                    'item_id' => $itemId,
+                    'expired_date' => $request->list_expired_date[$key] ?? null,
+                    'old_qty' => deformatCurrency($request->list_old_qty[$key] ?? 0),
                     'new_qty' => deformatCurrency($request->list_qty_new[$key] ?? 0),
+                    'unit_price' => deformatCurrency($request->list_unit_price[$key] ?? 0),
+                    'note' => $request->list_note[$key] ?? null,
                 ]);
             }
             OpnameDetail::insert($listDetail);
-            // commit data
+
             DB::commit();
-            $this->loggerHelper->logSuccess('store', $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logSuccess('store', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('Data berhasil disimpan', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -89,13 +96,13 @@ class OpnameController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $opname = Opname::with('financeAccount', 'warehousePosition', 'details.item')
+            $opname = Opname::with('company', 'warehouse', 'adjustedBy', 'updatedBy', 'details.item')
                 ->findOrFail($id);
     
-            $this->loggerHelper->logSuccess('show', $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logSuccess('show', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $opname);
         } catch (\Throwable $th) {
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -108,35 +115,40 @@ class OpnameController extends Controller
             // get opname by id
             $opname = Opname::findOrFail($id);
             // validate is adjusted
-            if ($opname->adjustment_status) {
+            if ($opname->adjustment_status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             // update data
-            $opname->company_id = $request->user()->company_id;
-            $opname->position_id = $request->position_id;
-            $opname->account_id = $request->account_id;
+            $date = now()->parse($request->date);
+            $opname->company_id = $request->company_id;
+            $opname->warehouse_id = $request->warehouse_id;
+            $opname->number = $request->code;
+            $opname->date = $date;
             $opname->note = $request->note;
             $opname->update();
             // delete current details
             OpnameDetail::where('opname_id', $opname->id)->delete();
             // update details
             $listDetail = [];
-            foreach ($request->list_item_id ?? [] as $key => $item) {
+            foreach ($request->list_item_id ?? [] as $key => $itemId) {
                 array_push($listDetail, [
                     'opname_id' => $opname->id,
-                    'item_id' => $item,
-                    'old_qty' => deformatCurrency($request->list_qty_system[$key] ?? 0),
+                    'item_id' => $itemId,
+                    'expired_date' => $request->list_expired_date[$key] ?? null,
+                    'old_qty' => deformatCurrency($request->list_old_qty[$key] ?? 0),
                     'new_qty' => deformatCurrency($request->list_qty_new[$key] ?? 0),
+                    'unit_price' => deformatCurrency($request->list_unit_price[$key] ?? 0),
+                    'note' => $request->list_note[$key] ?? null,
                 ]);
             }
             OpnameDetail::insert($listDetail);
-            // commit data
+
             DB::commit();
-            $this->loggerHelper->logSuccess('update', $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logSuccess('update', $request->user(), $request->all());
             return $this->responseFormatter->successResponse('Data berhasil diperbarui', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -148,79 +160,87 @@ class OpnameController extends Controller
         try {
             // get opname by id
             $opname = Opname::findOrFail($id);
-            if ($opname->adjustment_status) {
+            if ($opname->adjustment_status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             $opname->delete();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('delete', $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logSuccess('delete', $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
 
     // approval data
-    public function approval(Request $request, $id)
+    public function confirmApproval(Request $request, $id)
     {
         DB::beginTransaction();
         try {
             // get data
             $opname = Opname::with('details')->findOrFail($id);
-            if ($opname->adjustment_status) {
+            if ($opname->adjustment_status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-            // insert mutation
-            $mutation = new StockMutation;
-            foreach ($opname->details as $detail) {
-                $itemId = $detail->item_id;
-                $oldQty = $detail->old_qty;
-                $currentStock = $mutation->currentStock($itemId, $opname->company_id, $opname->position_id)->getData()->curent_stock;
-                // validate current-stock is already changed or not
-                if ($oldQty != $currentStock) {
-                    $opname->note = '( Stok sudah berubah, opname tidak dapat diproses )';
-                    $opname->save();
-                    throw new Exception("Stok sudah berubah, opname tidak dapat diproses", Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
+            if ($request->status == 'reject') {
+                $opname->adjustment_status = 'rejected';
+            } else {
+                $opname->adjustment_status = 'approved';
                 // insert mutation
-                $newQty = $detail->new_qty;
-                $hpp = $detail->hpp;
-                $diffStock = $newQty - $currentStock;
-                $cogm = 0;
-                if ($diffStock > 0) {
-                    $mutationIn = $mutation->mutationIn($itemId, $opname->position_id, abs($diffStock), now(), $hpp, $opname->number, $opname->company_id, null, "Stock Adjustment", $opname);
-                    if ($mutationIn->getStatus() != 'success') {
-                        throw new Exception($mutationIn->getErrorMessage(), 400);
+                $mutation = new StockMutation;
+                foreach ($opname->details as $detail) {
+                    $itemId = $detail->item_id;
+                    $oldQty = $detail->old_qty;
+                    $currentStock = $mutation->currentStock($itemId, $opname->company_id, $opname->warehouse_id)->getData()->curent_stock;
+                    // validate current-stock is already changed or not
+                    if ($oldQty != $currentStock) {
+                        $detail->status = 'locked';
+                        $detail->save();
+                    } else {
+                        $detail->status = 'adjusted';
+                        $detail->save();
+                        // insert mutation
+                        $newQty = $detail->new_qty;
+                        $hpp = $detail->hpp;
+                        $diffStock = $newQty - $currentStock;
+                        $cogm = 0;
+                        if ($diffStock > 0) {
+                            $mutationIn = $mutation->mutationIn($itemId, $opname->warehouse_id, abs($diffStock), now(), $hpp, $opname->number, $opname->company_id, null, "Stock Adjustment", $opname);
+                            if ($mutationIn->getStatus() != 'success') {
+                                throw new Exception($mutationIn->getErrorMessage(), 400);
+                            }
+                            $opname->stockMutations()->save($mutationIn->getData()->model);
+                            $cogm = ($hpp * $diffStock);
+                        } elseif ($diffStock < 0) {
+                            $mutationOut = $mutation->mutationOut($itemId, $opname->warehouse_id, abs($diffStock), now(), $opname->company_id, $opname->number, "Stock Adjustment", $opname);
+                            if ($mutationOut->getStatus() != 'success') {
+                                $itemName = MItem::whereId($itemId)->value('name');
+                                throw new Exception($mutationOut->getErrorMessage() . ' ( ' . $itemName . ' )', Response::HTTP_UNPROCESSABLE_ENTITY);
+                            }
+                            foreach ($mutationOut->getData()->model as $model) {
+                                $opname->stockMutations()->save($model);
+                            }
+                            $cogm = ($mutationOut->getData()->cogm ?? 0) * -1;
+                        }
                     }
-                    $opname->mutation()->save($mutationIn->getData()->model);
-                    $cogm = ($hpp * $diffStock);
-                } elseif ($diffStock < 0) {
-                    $mutationOut = $mutation->mutationOut($itemId, $opname->position_id, abs($diffStock), now(), $opname->company_id, $opname->number, "Stock Adjustment", $opname);
-                    if ($mutationOut->getStatus() != 'success') {
-                        $itemName = Item::where('id', $itemId)->value('name');
-                        throw new Exception($mutationOut->getErrorMessage() . ' ( ' . $itemName . ' )', Response::HTTP_UNPROCESSABLE_ENTITY);
-                    }
-                    foreach ($mutationOut->getData()->model as $key => $model) {
-                        $opname->mutation()->save($model);
-                    }
-                    $cogm = ($mutationOut->getData()->cogm ?? 0) * -1;
                 }
             }
+
             // update opname data
-            $opname->adjustment_status = true;
-            $opname->adjustment_by = $request->user()->id;
-            $opname->adjustment_at = now();
-            $opname->update();
+            $opname->adjusted_by = $request->user()->id;
+            $opname->adjusted_at = now();
+            $opname->updated_by = $request->user()->id;
+            $opname->save();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('approval', $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logSuccess('confirm approval', $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, $request->user()->company_id, $request->user()->user_id, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }

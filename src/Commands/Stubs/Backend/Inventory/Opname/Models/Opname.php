@@ -2,32 +2,51 @@
 
 namespace __defaultNamespace__\Models;
 
-use __defaultNamespace__\Models\Related\FinanceAccount;
+use __defaultNamespace__\Models\Related\MCompany;
+use __defaultNamespace__\Models\Related\MUser;
+use __defaultNamespace__\Models\Related\MWarehouse;
 use __defaultNamespace__\Models\Related\StockMutation;
-use __defaultNamespace__\Models\Related\Warehouse;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Opname extends Model
 {
     use HasFactory;
-    protected $table = 'inv_opname';
+    protected $table = 'inv_opnames';
 
-    // finance account
-    public function financeAccount()
+    // warehouse position
+    public function company()
     {
-        return $this->belongsTo(FinanceAccount::class, 'account_id');
+        return $this->belongsTo(MCompany::class, 'company_id');
     }
 
     // warehouse position
-    public function warehousePosition()
+    public function warehouse()
     {
-        return $this->belongsTo(Warehouse::class, 'position_id')->withTrashed();
+        return $this->belongsTo(MWarehouse::class, 'position_id');
     }
 
     // opname details
     public function details()
     {
         return $this->hasMany(OpnameDetail::class, 'opname_id');
+    }
+
+    // adjusted by
+    public function adjustedBy()
+    {
+        return $this->belongsTo(MUser::class, 'adjusted_by');
+    }
+
+    // updated by
+    public function updatedBy()
+    {
+        return $this->belongsTo(MUser::class, 'updated_by');
+    }
+
+    // stock mutation
+    public function stockMutations()
+    {
+        return $this->morphMany(StockMutation::class, 'mutationable');
     }
 }

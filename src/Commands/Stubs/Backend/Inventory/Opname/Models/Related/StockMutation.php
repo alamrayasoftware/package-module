@@ -5,9 +5,12 @@ namespace __defaultNamespace__\Models\Related;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FinanceAccount extends Model
+class StockMutation extends Model
 {
     use HasFactory;
-    protected $table = 'dk_akun';
-    protected $primaryKey = 'ak_id';
+
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 }

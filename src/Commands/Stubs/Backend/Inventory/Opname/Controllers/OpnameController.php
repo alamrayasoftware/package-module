@@ -55,10 +55,10 @@ class OpnameController extends Controller
     {
         DB::beginTransaction();
         try {
+            $date = now()->parse($request->date ?? now());
             $number = $request->code ?? NotaGenerator::generate('inv_opnames', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
 
             // insert new data
-            $date = now()->parse($request->date ?? now());
             $opname = new Opname();
             $opname->company_id = $request->company_id;
             $opname->warehouse_id = $request->warehouse_id;

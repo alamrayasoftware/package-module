@@ -4,7 +4,6 @@ namespace __defaultNamespace__\Controllers;
 
 use __defaultNamespace__\Models\Opname;
 use __defaultNamespace__\Models\OpnameDetail;
-use __defaultNamespace__\Models\Related\Item;
 use __defaultNamespace__\Models\Related\MItem;
 use App\Http\Controllers\Controller;
 use __defaultNamespace__\Requests\StoreRequest;

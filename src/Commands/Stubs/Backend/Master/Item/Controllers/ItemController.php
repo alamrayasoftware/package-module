@@ -3,15 +3,16 @@
 namespace __defaultNamespace__\Controllers;
 
 use App\Http\Controllers\Controller;
-use __defaultNamespace__\Models\MCompany;
+use __defaultNamespace__\Models\MItem;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
 use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
+use ArsoftModules\NotaGenerator\Facades\NotaGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CompanyController extends Controller
+class ItemController extends Controller
 {
     public $responseFormatter = null;
 
@@ -23,7 +24,7 @@ class CompanyController extends Controller
 
     public function index(Request $request)
     {
-        $listCompanies = MCompany::orderBy('name')->get();
+        $listCompanies = MItem::orderBy('name')->get();
 
         $this->loggerHelper->logSuccess('index', $request->user(), $request->all());
         return $this->responseFormatter->successResponse('', $listCompanies);
@@ -33,22 +34,17 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $newData = new MCompany();
+            $code = $request->code ?? NotaGenerator::generate('inv_opnames', 'number', 5)->addPrefix('ITEM', '/')->getResult();
+            
+            $newData = new MItem();
+            $newData->code = $code;
             $newData->name = $request->name;
-            $newData->company_parent_id = $request->company_parent_id;
-            $newData->code = $request->code;
-            $newData->phone = $request->phone;
-            $newData->email = $request->email;
-            $newData->address = $request->address;
-            // insert image and get the path
-            $imagePath = $request->image;
-            $newData->image_path = $imagePath;
-            $newData->province_id = $request->province_id;
-            $newData->city_id = $request->city_id;
-            $newData->district_id = $request->district_id;
             $newData->type = $request->type;
-            $newData->ownership_type = $request->ownership_type;
-            $newData->account_first_period = now()->parse($request->account_first_period ?? now());
+            $newData->status = $request->status;
+            $newData->cogs = $request->cogs;
+            $newData->default_selling_price = $request->default_selling_price;
+            $newData->minimum_stock_qty = $request->minimum_stock_qty;
+            $newData->note = $request->note;
             $newData->save();
 
             DB::commit();
@@ -64,10 +60,10 @@ class CompanyController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $company = MCompany::findOrFail($id);
+            $data = MItem::findOrFail($id);
 
             $this->loggerHelper->logSuccess('show', $request->user(), $request->all());
-            return $this->responseFormatter->successResponse('', $company);
+            return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
@@ -78,22 +74,15 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = MCompany::findOrFail($id);
-            $data->name = $request->name;
-            $data->company_parent_id = $request->company_parent_id;
+            $data = MItem::findOrFail($id);
             $data->code = $request->code;
-            $data->phone = $request->phone;
-            $data->email = $request->email;
-            $data->address = $request->address;
-            // insert image and get the path
-            $imagePath = $request->image;
-            $data->image_path = $imagePath;
-            $data->province_id = $request->province_id;
-            $data->city_id = $request->city_id;
-            $data->district_id = $request->district_id;
+            $data->name = $request->name;
             $data->type = $request->type;
-            $data->ownership_type = $request->ownership_type;
-            $data->account_first_period = now()->parse($request->account_first_period ?? now());
+            $data->status = $request->status;
+            $data->cogs = $request->cogs;
+            $data->default_selling_price = $request->default_selling_price;
+            $data->minimum_stock_qty = $request->minimum_stock_qty;
+            $data->note = $request->note;
             $data->save();
 
             DB::commit();
@@ -110,7 +99,7 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
-            MCompany::destroy($id);
+            MItem::destroy($id);
 
             DB::commit();
             $this->loggerHelper->logSuccess('delete', $request->user(), $request->all());

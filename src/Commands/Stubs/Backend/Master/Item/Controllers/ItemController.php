@@ -34,7 +34,7 @@ class ItemController extends Controller
     {
         DB::beginTransaction();
         try {
-            $code = $request->code ?? NotaGenerator::generate('inv_opnames', 'number', 5)->addPrefix('ITEM', '/')->getResult();
+            $code = $request->code ?? NotaGenerator::generate('m_items', 'code', 5)->addPrefix('ITEM', '/')->getResult();
             
             $newData = new MItem();
             $newData->code = $code;

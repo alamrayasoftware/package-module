@@ -48,7 +48,7 @@ class UpdateRequest extends FormRequest
         return [
             'company_id' => 'required|exists:__defaultNamespace__\Models\Related\MCompany,id',
             'position_id' => 'required|exists:__defaultNamespace__\Models\Related\MWarehouse,id',
-            'code' => 'required|unique:__defaultNamespace__\Models\Opname,number',
+            'code' => 'required|unique:__defaultNamespace__\Models\Opname,number,' . $this->id,
             'date' => 'nullable|date_format:Y-m-d',
             'list_item_id' => 'required|array',
             'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\MItem,id',

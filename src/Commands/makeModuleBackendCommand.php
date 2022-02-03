@@ -222,6 +222,32 @@ class makeModuleBackendCommand extends Command
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
+
+                // if directory, then loop inside directory and copy file
+                if (empty(pathinfo($file, PATHINFO_EXTENSION))) {
+                    if (!is_dir($modulePath . 'Models' . DIRECTORY_SEPARATOR . $file)) {
+                        mkdir($modulePath . 'Models' . DIRECTORY_SEPARATOR . $file);
+                    }
+                    $nestedModelStubPath = $modelStubPath . DIRECTORY_SEPARATOR . $file;
+                    $nestedModelDirectory = opendir($nestedModelStubPath);
+                    while (($nestedFile = readdir($nestedModelDirectory)) !== false) {
+                        if ($nestedFile === '.' || $nestedFile === '..') {
+                            continue;
+                        }
+                        $nestedModuleModelPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . $nestedFile;
+                        copy(
+                            $nestedModelStubPath . DIRECTORY_SEPARATOR . $nestedFile,
+                            $nestedModuleModelPath
+                        );
+                        $tempContent = file_get_contents($nestedModuleModelPath);
+                        $tempContent = str_replace('__defaultNamespace__', str_replace(DIRECTORY_SEPARATOR, '\\', $nameSpace), $tempContent);
+                        file_put_contents($nestedModuleModelPath, $tempContent);
+                    }
+                    closedir($nestedModelDirectory);
+                    continue;
+                }
+
+                // if not directory ( is file ), then copy file
                 $moduleModelPath = $modulePath . 'Models' . DIRECTORY_SEPARATOR . $file;
                 copy(
                     $modelStubPath . DIRECTORY_SEPARATOR . $file,

@@ -38,7 +38,7 @@ class AuthController extends Controller
             // TODO : send mail to registered email
 
             DB::commit();
-            $this->loggerHelper->logSuccess('register', null, $user->id, $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return response()->json([
                 'status' => 'success',
                 'message' => 'register success',
@@ -48,7 +48,7 @@ class AuthController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->loggerHelper->logError($th, null, null, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -66,7 +66,9 @@ class AuthController extends Controller
 
             $credential = $user->createToken('my-token')->plainTextToken;
 
-            $this->loggerHelper->logSuccess('login', null, $user->id, $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), [
+                'email' => $request->email
+            ]);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login success',
@@ -76,8 +78,9 @@ class AuthController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            DB::rollBack();
-            $this->loggerHelper->logError($th, null, null, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), [
+                'email' => $request->email
+            ]);
             return $this->responseFormatter->errorResponse($th);
         }
     }
@@ -87,7 +90,7 @@ class AuthController extends Controller
         try {
             $request->user()->currentAccessToken()->delete();
 
-            $this->loggerHelper->logSuccess('logout', null, $request->user()->id, $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Logout success',
@@ -96,8 +99,7 @@ class AuthController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            DB::rollBack();
-            $this->loggerHelper->logError($th, null, null, $request->all());
+            $this->loggerHelper->logError($th, $request->user(), $request->all());
             return $this->responseFormatter->errorResponse($th);
         }
     }

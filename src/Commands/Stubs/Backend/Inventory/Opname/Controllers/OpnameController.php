@@ -45,7 +45,7 @@ class OpnameController extends Controller
             ->orderByDesc('number')
             ->get();
 
-        $this->loggerHelper->logSuccess('index', $request->user(), $request->all());
+        $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
         return $this->responseFormatter->successResponse('', $opnames);
     }
 
@@ -82,7 +82,7 @@ class OpnameController extends Controller
             OpnameDetail::insert($listDetail);
 
             DB::commit();
-            $this->loggerHelper->logSuccess('store', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('Data berhasil disimpan', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -98,7 +98,7 @@ class OpnameController extends Controller
             $opname = Opname::with('company', 'warehouse', 'adjustedBy', 'updatedBy', 'details.item')
                 ->findOrFail($id);
     
-            $this->loggerHelper->logSuccess('show', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $opname);
         } catch (\Throwable $th) {
             $this->loggerHelper->logError($th, $request->user(), $request->all());
@@ -143,7 +143,7 @@ class OpnameController extends Controller
             OpnameDetail::insert($listDetail);
 
             DB::commit();
-            $this->loggerHelper->logSuccess('update', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('Data berhasil diperbarui', $opname);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -165,7 +165,7 @@ class OpnameController extends Controller
             $opname->delete();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('delete', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -235,7 +235,7 @@ class OpnameController extends Controller
             $opname->save();
 
             DB::commit();
-            $this->loggerHelper->logSuccess('confirm approval', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();

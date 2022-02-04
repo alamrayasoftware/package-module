@@ -76,8 +76,8 @@ class LoggerHelper
     private function privateLogger($data, $errorCode = false)
     {
         switch (true) {
-            case ($errorCode == false):
-                Log::debug($data['context'], $data);
+            case (($errorCode == false) || ($errorCode >= 500) || is_string($errorCode)):
+                Log::error($data['context'], $data);
                 break;
 
             case ($errorCode < 300):
@@ -88,10 +88,6 @@ class LoggerHelper
                 Log::warning($data['context'], $data);
                 break;
 
-            case ($errorCode >= 500 && $errorCode < 600):
-                Log::error($data['context'], $data);
-                break;
-            
             default:
                 Log::debug($data['context'], $data);
                 break;

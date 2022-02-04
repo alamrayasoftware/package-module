@@ -25,7 +25,7 @@ class __childModuleName__Controller extends Controller
         // your code here
         $datas = [];
 
-        $this->loggerHelper->logSuccess('index', $request->user(), $request->all());
+        $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
         return $this->responseFormatter->successResponse('', $datas);
     }
 
@@ -37,7 +37,7 @@ class __childModuleName__Controller extends Controller
             $newData = null;
 
             DB::commit();
-            $this->loggerHelper->logSuccess('store', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $newData);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -52,7 +52,7 @@ class __childModuleName__Controller extends Controller
             // your code here
             $data = null;
 
-            $this->loggerHelper->logSuccess('show', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             $this->loggerHelper->logError($th, $request->user(), $request->all());
@@ -68,7 +68,7 @@ class __childModuleName__Controller extends Controller
             $data = null;
 
             DB::commit();
-            $this->loggerHelper->logSuccess('update', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse('', $data);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -84,7 +84,7 @@ class __childModuleName__Controller extends Controller
             // your code here
 
             DB::commit();
-            $this->loggerHelper->logSuccess('delete', $request->user(), $request->all());
+            $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
             return $this->responseFormatter->successResponse();
         } catch (\Throwable $th) {
             DB::rollBack();

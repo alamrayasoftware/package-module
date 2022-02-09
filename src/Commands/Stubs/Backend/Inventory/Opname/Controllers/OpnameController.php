@@ -5,9 +5,10 @@ namespace __defaultNamespace__\Controllers;
 use __defaultNamespace__\Models\Opname;
 use __defaultNamespace__\Models\OpnameDetail;
 use __defaultNamespace__\Models\Related\MItem;
-use App\Http\Controllers\Controller;
+use __defaultNamespace__\Requests\ConfirmApprovalRequest;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
+use App\Http\Controllers\Controller;
 use App\Helpers\LoggerHelper;
 use App\Helpers\ResponseFormatter;
 use ArsoftModules\NotaGenerator\Facades\NotaGenerator;
@@ -41,7 +42,12 @@ class OpnameController extends Controller
             $opnames = $opnames->whereCompanyId($request->company_id);
         }
 
-        $opnames = $opnames->with('financeAccount', 'warehousePosition', 'details.item')
+        // filter by warehouse-id
+        if ($request->warehouse_id) {
+            $opnames = $opnames->whereWarehouseId($request->warehouse_id);
+        }
+
+        $opnames = $opnames->with('company', 'warehouse', 'details.item')
             ->orderByDesc('number')
             ->get();
 
@@ -54,8 +60,8 @@ class OpnameController extends Controller
     {
         DB::beginTransaction();
         try {
-            $date = now()->parse($request->date ?? now());
-            $number = $request->code ?? NotaGenerator::generate('inv_opnames', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
+            $date = now();
+            $number = $request->number ?? NotaGenerator::generate('inv_opnames', 'number', 5, $date)->addPrefix('OPNAME', '/')->getResult();
 
             // insert new data
             $opname = new Opname();
@@ -64,17 +70,20 @@ class OpnameController extends Controller
             $opname->number = $number;
             $opname->date = $date;
             $opname->note = $request->note;
+            $opname->created_by = $request->user()->id;
+            $opname->updated_by = $request->user()->id;
             $opname->save();
 
             // insert details
             $listDetail = [];
             foreach ($request->list_item_id ?? [] as $key => $itemId) {
+                $expiredDate = $request->list_expired_date[$key] ? now()->parse($request->list_expired_date[$key]) : null;
                 array_push($listDetail, [
                     'opname_id' => $opname->id,
                     'item_id' => $itemId,
-                    'expired_date' => $request->list_expired_date[$key] ?? null,
-                    'old_qty' => deformatCurrency($request->list_old_qty[$key] ?? 0),
-                    'new_qty' => deformatCurrency($request->list_qty_new[$key] ?? 0),
+                    'expired_date' => $expiredDate,
+                    'old_qty' => deformatCurrency($request->list_old_qty[$key]),
+                    'new_qty' => deformatCurrency($request->list_new_qty[$key]),
                     'unit_price' => deformatCurrency($request->list_unit_price[$key] ?? 0),
                     'note' => $request->list_note[$key] ?? null,
                 ]);
@@ -95,7 +104,7 @@ class OpnameController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $opname = Opname::with('company', 'warehouse', 'adjustedBy', 'updatedBy', 'details.item')
+            $opname = Opname::with('company', 'warehouse', 'createdBy', 'adjustedBy', 'updatedBy', 'details.item')
                 ->findOrFail($id);
     
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -118,24 +127,21 @@ class OpnameController extends Controller
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
             // update data
-            $date = now()->parse($request->date);
-            $opname->company_id = $request->company_id;
-            $opname->warehouse_id = $request->warehouse_id;
-            $opname->number = $request->code;
-            $opname->date = $date;
             $opname->note = $request->note;
+            $opname->updated_by = $request->user()->id;
             $opname->update();
             // delete current details
             OpnameDetail::where('opname_id', $opname->id)->delete();
             // update details
             $listDetail = [];
             foreach ($request->list_item_id ?? [] as $key => $itemId) {
+                $expiredDate = $request->list_expired_date[$key] ? now()->parse($request->list_expired_date[$key]) : null;
                 array_push($listDetail, [
                     'opname_id' => $opname->id,
                     'item_id' => $itemId,
-                    'expired_date' => $request->list_expired_date[$key] ?? null,
+                    'expired_date' => $expiredDate,
                     'old_qty' => deformatCurrency($request->list_old_qty[$key] ?? 0),
-                    'new_qty' => deformatCurrency($request->list_qty_new[$key] ?? 0),
+                    'new_qty' => deformatCurrency($request->list_new_qty[$key] ?? 0),
                     'unit_price' => deformatCurrency($request->list_unit_price[$key] ?? 0),
                     'note' => $request->list_note[$key] ?? null,
                 ]);
@@ -175,7 +181,7 @@ class OpnameController extends Controller
     }
 
     // approval data
-    public function confirmApproval(Request $request, $id)
+    public function confirmApproval(ConfirmApprovalRequest $request, $id)
     {
         DB::beginTransaction();
         try {

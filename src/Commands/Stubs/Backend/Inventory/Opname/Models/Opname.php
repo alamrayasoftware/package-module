@@ -33,6 +33,12 @@ class Opname extends Model
     }
 
     // adjusted by
+    public function createdBy()
+    {
+        return $this->belongsTo(MUser::class, 'created_by');
+    }
+
+    // adjusted by
     public function adjustedBy()
     {
         return $this->belongsTo(MUser::class, 'adjusted_by');

@@ -47,12 +47,12 @@ class StoreRequest extends FormRequest
     {
         return [
             'company_id' => 'required|exists:__defaultNamespace__\Models\Related\MCompany,id',
-            'position_id' => 'required|exists:__defaultNamespace__\Models\Related\MWarehouse,id',
-            'code' => 'nullable|unique:__defaultNamespace__\Models\Opname,number',
-            'date' => 'nullable|date_format:Y-m-d',
+            'warehouse_id' => 'required|exists:__defaultNamespace__\Models\Related\MWarehouse,id',
+            'number' => 'nullable|unique:__defaultNamespace__\Models\Opname,number',
             'list_item_id' => 'required|array',
             'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\MItem,id',
             'list_expired_date' => 'nullable|array',
+            'list_expired_date.*' => 'date_format:Y-m-d',
             'list_old_qty' => 'required|array',
             'list_new_qty' => 'required|array',
             'list_unit_price' => 'required|array',

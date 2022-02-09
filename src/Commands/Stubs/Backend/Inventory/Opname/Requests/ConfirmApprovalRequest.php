@@ -8,7 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class ConfirmApprovalRequest extends FormRequest
 {
     /**
      * Indicates if the validator should stop on the first rule failure.
@@ -46,14 +46,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'list_item_id' => 'required|array',
-            'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\MItem,id',
-            'list_expired_date' => 'nullable|array',
-            'list_expired_date.*' => 'date_format:Y-m-d',
-            'list_old_qty' => 'required|array',
-            'list_new_qty' => 'required|array',
-            'list_unit_price' => 'required|array',
-            'list_note' => 'nullable|array',
+            'status' => 'required|in:approve,reject',
         ];
     }
 

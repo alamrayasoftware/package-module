@@ -21,7 +21,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/', [OpnameController::class, 'store']);
         Route::get('/{id}', [OpnameController::class, 'show']);
         Route::put('/{id}', [OpnameController::class, 'update']);
-        Route::patch('/{id}/approval', [OpnameController::class, 'approval']);
+        Route::patch('/{id}/approval', [OpnameController::class, 'confirmApproval']);
         Route::delete('/{id}', [OpnameController::class, 'destroy']);
     });
 });

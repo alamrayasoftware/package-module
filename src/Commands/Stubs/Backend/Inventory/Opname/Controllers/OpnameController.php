@@ -209,7 +209,7 @@ class OpnameController extends Controller
                         $detail->save();
                         // insert mutation
                         $newQty = $detail->new_qty;
-                        $hpp = $detail->hpp;
+                        $hpp = $detail->hpp ?? 0;
                         $diffStock = $newQty - $currentStock;
                         $cogm = 0;
                         if ($diffStock > 0) {

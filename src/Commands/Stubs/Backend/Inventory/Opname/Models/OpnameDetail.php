@@ -10,10 +10,11 @@ class OpnameDetail extends Model
 {
     use HasFactory;
     protected $table = 'inv_opname_details';
+    public $timestamps = false;
 
     // item
     public function item()
     {
-        return $this->belongsTo(MItem::class, 'item_id');
+        return $this->belongsTo(MItem::class, 'item_id')->withTrashed();
     }
 }

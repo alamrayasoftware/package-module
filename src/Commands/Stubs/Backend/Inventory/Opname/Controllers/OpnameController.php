@@ -213,14 +213,14 @@ class OpnameController extends Controller
                         $diffStock = $newQty - $currentStock;
                         $cogm = 0;
                         if ($diffStock > 0) {
-                            $mutationIn = $mutation->mutationIn($itemId, $opname->warehouse_id, abs($diffStock), now(), $hpp, $opname->number, $opname->company_id, null, "Stock Adjustment", $opname);
+                            $mutationIn = $mutation->mutationIn($itemId, $opname->warehouse_id, abs($diffStock), now(), $hpp, $opname->number, $opname->company_id, null, "Stock Adjustment");
                             if ($mutationIn->getStatus() != 'success') {
                                 throw new Exception($mutationIn->getErrorMessage(), 400);
                             }
                             $opname->stockMutations()->save($mutationIn->getData()->model);
                             $cogm = ($hpp * $diffStock);
                         } elseif ($diffStock < 0) {
-                            $mutationOut = $mutation->mutationOut($itemId, $opname->warehouse_id, abs($diffStock), now(), $opname->company_id, $opname->number, "Stock Adjustment", $opname);
+                            $mutationOut = $mutation->mutationOut($itemId, $opname->warehouse_id, abs($diffStock), now(), $opname->company_id, $opname->number, "Stock Adjustment");
                             if ($mutationOut->getStatus() != 'success') {
                                 $itemName = MItem::whereId($itemId)->value('name');
                                 throw new Exception($mutationOut->getErrorMessage() . ' ( ' . $itemName . ' )', Response::HTTP_UNPROCESSABLE_ENTITY);

@@ -129,13 +129,14 @@ class IncomingGoodsController extends Controller
     {
         try {
             $data = InventoryTransactions::with(
-                'companyOrigin', 
-                'warehouseOrigin', 
-                'companyDestination', 
-                'warehouseDestination', 
-                'createdBy', 
-                'updatedBy', 
-                ['details' => function ($q) {
+                    'companyOrigin', 
+                    'warehouseOrigin', 
+                    'companyDestination', 
+                    'warehouseDestination', 
+                    'createdBy', 
+                    'updatedBy'
+                )
+                ->with(['details' => function ($q) {
                     $q->with('item')
                         ->with('unit');
                 }])

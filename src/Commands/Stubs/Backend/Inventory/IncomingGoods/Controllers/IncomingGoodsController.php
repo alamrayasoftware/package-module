@@ -66,10 +66,10 @@ class IncomingGoodsController extends Controller
                 $q->select('id', 'name');
             }])
             ->with(['createdBy' => function ($q) {
-                $q->select('id', 'name');
+                $q->select('id', 'first_name', 'last_name');
             }])
             ->with(['updatedBy' => function ($q) {
-                $q->select('id', 'name');
+                $q->select('id', 'first_name', 'last_name');
             }])
             ->orderByDesc('number')
             ->get();

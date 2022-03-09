@@ -10,7 +10,7 @@
     "minimum-stability": "dev",
     "require": {
         "arsoft-modules/nota-generator": "dev-main",
-        "arsoft-modules/stock-mutation": "dev-main"
+        "arsoft-modules/stock-mutation": "^1.0"
     },
     "license": "MIT",
     "autoload": {

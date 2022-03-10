@@ -9,7 +9,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "arsoft-modules/nota-generator": "dev-main",
+        "arsoft-modules/nota-generator": "^1.0",
         "arsoft-modules/stock-mutation": "^1.0"
     },
     "license": "MIT",

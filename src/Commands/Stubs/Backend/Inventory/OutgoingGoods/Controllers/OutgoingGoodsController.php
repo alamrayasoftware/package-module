@@ -239,6 +239,7 @@ class OutgoingGoodsController extends Controller
                         throw new Exception($mutationOut->getErrorMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
                     }
                     $data->stockMutations()->save($mutationOut->getData()->model);
+                    $cogm = $mutationOut->getData()->cogm;
                 }
             }
 

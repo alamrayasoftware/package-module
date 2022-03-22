@@ -7,7 +7,7 @@ use __defaultNamespace__\Models\Related\MUnitOfMeasurement;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryTransactionDetails extends Model
+class InventoryTransactionDetail extends Model
 {
     use HasFactory;
     protected $table = 'inv_transaction_details';

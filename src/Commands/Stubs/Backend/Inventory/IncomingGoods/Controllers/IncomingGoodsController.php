@@ -2,8 +2,8 @@
 
 namespace __defaultNamespace__\Controllers;
 
-use __defaultNamespace__\Models\InventoryTransactionDetails;
-use __defaultNamespace__\Models\InventoryTransactions;
+use __defaultNamespace__\Models\InventoryTransactionDetail;
+use __defaultNamespace__\Models\InventoryTransaction;
 use __defaultNamespace__\Requests\ConfirmApprovalRequest;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
@@ -34,7 +34,7 @@ class IncomingGoodsController extends Controller
         $endDate = now()->parse($request->end_date ?? now()->endOfMonth())->endOfDay();
         
         // filter by date-range
-        $datas = InventoryTransactions::whereBetween('date', [$startDate, $endDate]);
+        $datas = InventoryTransaction::whereBetween('date', [$startDate, $endDate]);
 
         // filter by company-origin-id
         if ($request->company_origin_id) {
@@ -87,7 +87,7 @@ class IncomingGoodsController extends Controller
             $number = $request->number ?? NotaGenerator::generate('inv_transactions', 'number', 5, $date)->addPrefix('INC-TRANS', '/')->getResult();
 
             // insert new data
-            $data = new InventoryTransactions();
+            $data = new InventoryTransaction();
             $data->company_origin_id = $request->company_origin_id;
             $data->warehouse_origin_id = $request->warehouse_origin_id;
             $data->company_destination_id = $request->company_destination_id;
@@ -112,7 +112,7 @@ class IncomingGoodsController extends Controller
                     'note' => $request->list_note[$key] ?? null,
                 ]);
             }
-            InventoryTransactionDetails::insert($listDetail);
+            InventoryTransactionDetail::insert($listDetail);
 
             DB::commit();
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -128,7 +128,7 @@ class IncomingGoodsController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $data = InventoryTransactions::with(
+            $data = InventoryTransaction::with(
                     'companyOrigin', 
                     'warehouseOrigin', 
                     'companyDestination', 
@@ -156,7 +156,7 @@ class IncomingGoodsController extends Controller
         DB::beginTransaction();
         try {
             // get data by id
-            $data = InventoryTransactions::findOrFail($id);
+            $data = InventoryTransaction::findOrFail($id);
             // validate is status
             if ($data->status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -166,7 +166,7 @@ class IncomingGoodsController extends Controller
             $data->updated_by = $request->user()->id;
             $data->update();
             // delete current details
-            InventoryTransactionDetails::where('inv_transaction_id', $data->id)->delete();
+            InventoryTransactionDetail::where('inv_transaction_id', $data->id)->delete();
             // insert new details
             $listDetail = [];
             foreach ($request->list_item_id ?? [] as $key => $itemId) {
@@ -179,7 +179,7 @@ class IncomingGoodsController extends Controller
                     'note' => $request->list_note[$key] ?? null,
                 ]);
             }
-            InventoryTransactionDetails::insert($listDetail);
+            InventoryTransactionDetail::insert($listDetail);
 
             DB::commit();
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -197,7 +197,7 @@ class IncomingGoodsController extends Controller
         DB::beginTransaction();
         try {
             // get data by id
-            $data = InventoryTransactions::findOrFail($id);
+            $data = InventoryTransaction::findOrFail($id);
             if ($data->status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
@@ -219,7 +219,7 @@ class IncomingGoodsController extends Controller
         DB::beginTransaction();
         try {
             // get data
-            $data = InventoryTransactions::with('details')->findOrFail($id);
+            $data = InventoryTransaction::with('details')->findOrFail($id);
             if ($data->status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }

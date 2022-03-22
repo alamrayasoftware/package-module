@@ -48,7 +48,7 @@ class StoreRequest extends FormRequest
         return [
             'company_destination_id' => 'required|exists:__defaultNamespace__\Models\Related\MCompany,id',
             'warehouse_destination_id' => 'required|exists:__defaultNamespace__\Models\Related\MWarehouse,id',
-            'number' => 'nullable|unique:__defaultNamespace__\Models\InventoryTransactions,number',
+            'number' => 'nullable|unique:__defaultNamespace__\Models\InventoryTransaction,number',
             'list_item_id' => 'required|array',
             'list_item_id.*' => 'exists:__defaultNamespace__\Models\Related\MItem,id',
             'list_qty' => 'required|array',

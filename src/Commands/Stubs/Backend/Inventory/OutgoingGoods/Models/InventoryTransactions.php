@@ -9,7 +9,7 @@ use __defaultNamespace__\Models\Related\StockMutation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryTransactions extends Model
+class InventoryTransaction extends Model
 {
     use HasFactory;
     protected $table = 'inv_transactions';
@@ -41,7 +41,7 @@ class InventoryTransactions extends Model
     // details
     public function details()
     {
-        return $this->hasMany(InventoryTransactionDetails::class, 'inv_transaction_id');
+        return $this->hasMany(InventoryTransactionDetail::class, 'inv_transaction_id');
     }
 
     // created by

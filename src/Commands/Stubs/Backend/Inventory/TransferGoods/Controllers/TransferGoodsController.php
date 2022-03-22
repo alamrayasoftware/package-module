@@ -2,8 +2,8 @@
 
 namespace __defaultNamespace__\Controllers;
 
-use __defaultNamespace__\Models\InventoryTransactionDetails;
-use __defaultNamespace__\Models\InventoryTransactions;
+use __defaultNamespace__\Models\InventoryTransactionDetail;
+use __defaultNamespace__\Models\InventoryTransaction;
 use __defaultNamespace__\Requests\ConfirmApprovalRequest;
 use __defaultNamespace__\Requests\StoreRequest;
 use __defaultNamespace__\Requests\UpdateRequest;
@@ -39,7 +39,7 @@ class TransferGoodsController extends Controller
             $endDate = now()->parse($request->end_date)->endOfDay();
         }
         $companyId = $request->user()->company_id;
-        $transfer = InventoryTransactions::dataOwner($companyId, 'transfer')->whereBetween('date', [$startDate, $endDate]);
+        $transfer = InventoryTransaction::dataOwner($companyId, 'transfer')->whereBetween('date', [$startDate, $endDate]);
 
         if ($request->company_destination_id) {
             $transfer = $transfer->where('company_destination_id', $request->company_destination_id);
@@ -56,7 +56,7 @@ class TransferGoodsController extends Controller
         DB::beginTransaction();
         try {
             $date = $request->date ?? now();
-            $data = new InventoryTransactions();
+            $data = new InventoryTransaction();
             $data->company_origin_id = $request->user()->company_id;
             $data->warehouse_origin_id = $request->warehouse_origin_id;
             $data->company_destination_id = $request->company_destination_id;
@@ -83,7 +83,7 @@ class TransferGoodsController extends Controller
                 ]);
             }
 
-            InventoryTransactionDetails::insert($listDetail);
+            InventoryTransactionDetail::insert($listDetail);
 
             DB::commit();
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -99,7 +99,7 @@ class TransferGoodsController extends Controller
     public function show(Request $request, $id)
     {
         try {
-            $data = InventoryTransactions::where('type', 'transfer')
+            $data = InventoryTransaction::where('type', 'transfer')
                 ->with('destination', 'companyDestination', 'financeAccount', 'origin', 'companyOrigin')
                 ->with(['details' => function ($q) {
                     $q->with(['item' => function ($q) {
@@ -124,7 +124,7 @@ class TransferGoodsController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = InventoryTransactions::findOrFail($id);
+            $data = InventoryTransaction::findOrFail($id);
             $data->company_destination_id = $request->company_destination_id;
             $data->warehouse_destination_id = $request->warehouse_destination_id;
             if ($request->date) {
@@ -134,7 +134,7 @@ class TransferGoodsController extends Controller
             $data->update();
 
             // delete details
-            InventoryTransactionDetails::where('inv_transaction_id', $data->id)->delete();
+            InventoryTransactionDetail::where('inv_transaction_id', $data->id)->delete();
 
             $listDetail = [];
             foreach ($request->list_item_id ?? [] as $key => $item) {
@@ -151,7 +151,7 @@ class TransferGoodsController extends Controller
                     'unit_price' => $unitPrice,
                 ]);
             }
-            InventoryTransactionDetails::insert($listDetail);
+            InventoryTransactionDetail::insert($listDetail);
 
             DB::commit();
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -168,7 +168,7 @@ class TransferGoodsController extends Controller
     {
         DB::beginTransaction();
         try {
-            InventoryTransactions::findOrFail($id)->delete();
+            InventoryTransaction::findOrFail($id)->delete();
 
             DB::commit();
             $this->loggerHelper->logSuccess($request->getRequestUri(), $request->user(), $request->all());
@@ -186,7 +186,7 @@ class TransferGoodsController extends Controller
         DB::beginTransaction();
         try {
             // get data
-            $data = InventoryTransactions::with('details')->findOrFail($id);
+            $data = InventoryTransaction::with('details')->findOrFail($id);
             if ($data->status != 'waiting') {
                 throw new Exception("Data sudah diproses, tidak dapat diubah", Response::HTTP_UNPROCESSABLE_ENTITY);
             }
